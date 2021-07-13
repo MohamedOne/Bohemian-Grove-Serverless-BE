@@ -1,0 +1,20 @@
+Request flow:
+Frontend interaction -> AWS API Gateway -> AWS Lambda -> Other AWS Service <- Response
+
+1. Set up database using AWS DynamoDB
+2. Set up credentials using AWS Cognito
+3. Set up S3 for image storage
+4. Create API using API Gateway (Swagger, OpenAPI 3.0, from scratch?)
+5. Create a function in AWS Lambda for each endpoint in the API
+6. Point each endpoint to its corresponding Lambda function
+
+Other technologies
+AWS X-Ray - Traces requests through entire application, useful for debugging.
+AWS Step Functions - Wrapper on top of Lambda for workflows requiring more than one function.
+AWS SNS - Simple Notification Service, for notifications. Probably use this to verify emails.
+AWS SQS - Simple Queue Service, looks like it's for moving data between services?
+Amazon Kinesis - Service for handling streaming data.
+AWS CodePipeline - Automates the process of building and deploying code. Cade be integrated with GitHub.
+AWS Amplify - Tools for connecting the front end with the back end. Also looks like a one-stop-shop for managing the back end.
+AWS SAM - Serverless Application Model, models a serverless application and then deploys it
+AWS CloudFormation - Tool for managing stacks of AWS services as a single unit
