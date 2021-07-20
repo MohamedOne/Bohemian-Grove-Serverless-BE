@@ -1,0 +1,31 @@
+{
+  "name": "bohemian-grove-serverless",
+  "version": "1.0.0",
+  "description": "The source code for Bohemian Grove's serverless backend.",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RevatureRobert/Team1-Project2-BE.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RevatureRobert/Team1-Project2-BE/issues"
+  },
+  "homepage": "https://github.com/RevatureRobert/Team1-Project2-BE#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.3.3",
+    "dotenv": "^10.0.0",
+    "jest": "^27.0.6",
+    "jest-dynalite": "^3.4.1",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.22.0",
+    "@aws-sdk/lib-dynamodb": "^3.22.0",
+    "@aws-sdk/util-dynamodb": "^3.22.0"
+  }
+}
