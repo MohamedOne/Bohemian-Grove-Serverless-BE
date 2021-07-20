@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "The source code for Bohemian Grove's serverless backend.",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

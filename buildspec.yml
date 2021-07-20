@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing node packages...
+      - npm install
+  pre_build:
+    commands:
+      - echo Logging in to ECR...
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 319115845002.dkr.ecr.us-east-2.amazonaws.com
+  build:
+    commands:
+      - echo Compiling TypeScript...
+      - npm build
+      - echo Building and tagging docker image...
+      - docker build -t bohemian-grove-serverless .
+      - docker tag bohemian-grove-serverless:latest 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+  post_build:
+    commands:
+      - echo Build complete. Pushing to ECR...
+      - docker push 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      - echo Push complete. Deploying SAM template.
+      - sam deploy
