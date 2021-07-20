@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "BG-Serverless"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-cevoddeymacb"
+s3_prefix = "BG-Serverless"
+region = "us-east-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["CreateUserFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "GetUserFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "UpdateUserFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "DeleteUserFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "SearchUsersFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "CreatePostFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "CreateCommentFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "GetPostFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "GetGlobalFeedFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "GetUserFeedFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "UpdatePostFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "DeletePostFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless", "DeleteCommentFn=319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless"]

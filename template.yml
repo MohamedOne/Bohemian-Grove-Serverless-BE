@@ -1,0 +1,281 @@
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Environment:
+      Variables:
+        DDB_TABLE_NAME: bg-data
+  Api:
+    Auth:
+      Authorizers: 
+        BGCognito:
+          AuthorizationScopes: 
+            - email
+          UserPoolArn: arn:aws:cognito-idp:us-east-2:319115845002:userpool/us-east-2_oYJIkyosz
+      DefaultAuthorizer: BGCognito
+    Cors:
+
+Description: The AWS SAM template for the Bohemian Grove serverless backend.
+
+Resources: 
+  # User lambdas
+  CreateUserFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-CreateUser
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/CreateUserFn/CreateUser.handler
+      Description: Creates a single user in the DynamoDB table.
+      Events: 
+        ApiEvent:
+          Type: Api
+          Properties: 
+            Path: /user/{userName}
+            Method: post
+            RequestParameters:
+              - method.request.path.userName
+
+
+  GetUserFn: 
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-GetUser
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/GetUserFn/GetUser.handler
+      Description: Gets a single user's information from the DynamoDB table.
+      Events: 
+        ApiEvent:
+          Type: Api
+          Properties: 
+            Path: /user/{userName}
+            Method: get
+            RequestParameters: 
+              - method.request.path.userName
+
+
+  UpdateUserFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-UpdateUser
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/UpdateUserFn/UpdateUser.handler
+      Description: Updates a single user's information in the DynamoDB table.
+      Events: 
+        ApiEvent:
+          Type: Api
+          Properties: 
+            Path: /user/{userName}
+            Method: put
+            RequestParameters: 
+              - method.request.path.userName
+
+
+  DeleteUserFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-DeleteUser
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/DeleteUserFn/DeleteUser.handler
+      Description: Deletes a single user from the DynamoDB table.
+      Events: 
+        ApiEvent:
+          Type: Api
+          Properties: 
+            Path: /user/{userName}
+            Method: delete
+            RequestParameters: 
+              - method.request.path.userName
+
+
+  SearchUsersFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-SearchUsers
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/SearchUsersFn/SearchUsers.handler
+      Description: Searches for all users matching a search term in the DynamoDB table.
+      Events: 
+        ApiEvent:
+          Type: Api
+          Properties: 
+            Path: /user/search/{searchTerm}
+            Method: get
+            RequestParameters: 
+              - method.request.path.searchTerm
+
+  # Post lambdas
+  CreatePostFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-CreatePost
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/CreatePostFn/CreatePost.handler
+      Description: Creates a single post for a user.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post
+            Method: post
+
+
+  CreateCommentFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-CreateComment
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/CreateCommentFn/CreateComment.handler
+      Description: Creates a single comment on a post.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/{postId}
+            Method: post
+            RequestParameters:
+              - method.request.path.postId
+
+
+  GetPostFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-GetPost
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/GetPostFn/GetPost.handler
+      Description: Get a single post and all of its comments.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/{postId}
+            Method: get
+            RequestParameters:
+              - method.request.path.postId
+
+
+  GetGlobalFeedFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-GetGlobalFeed
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/GetGlobalFeedFn/GetGlobalFeed.handler
+      Description: Gets the global feed.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post
+            Method: get
+
+
+  GetUserFeedFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-GetUserFeed
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/GetUserFeedFn/GetUserFeed.handler
+      Description: Gets the feed for a single user or a group of users.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/user/{userName}
+            Method: get
+            RequestParameters:
+              - method.request.path.userName
+              - method.request.querystring.following
+
+
+  UpdatePostFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-UpdatePost
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/UpdatePostFn/UpdatePost.handler
+      Description: Updates a single post.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/{postId}
+            Method: put
+            RequestParameters:
+              - method.request.path.postId
+
+
+  DeletePostFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-DeletePost
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/DeletePostFn/DeletePost.handler
+      Description: Delete a single post.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/{postId}
+            Method: delete
+            RequestParameters:
+              - method.request.path.postId
+
+
+  DeleteCommentFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-DeleteComment
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          - /bg/DeleteCommentFn/DeleteComment.handler
+      Description: Delete a single comment on a post.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/{postId}/{commentId}
+            Method: delete
+            RequestParameters:
+              - method.request.path.postId
+              - method.request.path.commentId
+
+  # Image lambdas
+  # AddUserImgFn:
+  # ChangeUserImgFn:
