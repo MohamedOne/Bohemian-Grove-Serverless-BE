@@ -20,5 +20,9 @@ phases:
     commands:
       - echo Build complete. Pushing to ECR...
       - docker push 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
-      - echo Push complete. Deploying SAM template.
-      - sam deploy
+
+
+artifacts:
+  files:
+    - template.yml
+    - samconfig.toml
