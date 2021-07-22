@@ -6,16 +6,13 @@ import { QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
 
 export const handler = async (): Promise<HTTPResponse> => {
     // Your code here
-    const datatype = "post";
+
     const params: QueryCommandInput = {
         TableName: process.env.DDB_TABLE_NAME,
         ExpressionAttributeValues: {
-            ":p": datatype
+            ":p": "post"
         },
-        ExpressionAttributeNames: {
-            "#t": "dataType"
-        },
-        KeyConditionExpression: '#t = :p'
+        KeyConditionExpression: 'dataType = :p'
 
     }
     let feed: Post[] = [];
