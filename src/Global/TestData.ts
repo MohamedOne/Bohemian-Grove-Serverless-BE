@@ -37,3 +37,33 @@ export const testPost3 = {
     likes: ["sam", "jared", "kai"]
 
 }
+
+export const testUser1 = {
+
+    dataKey: "admin",
+    dataType: "user",
+    displayName: "captain",
+    email: "asdas@gmail.com",
+    password: "ASDASD",
+    profileImg: "img"
+
+}
+export const testUser2 = {
+
+    dataKey: "admin",
+    dataType: "user",
+    displayName: "no name",
+    email: "asdas@yahoo.com",
+    password: "ASgASD",
+    profileImg: "img"
+
+}
+export const testUser3 = {
+
+    dataKey: "joe",
+    dataType: "user",
+    displayName: "har de har",
+    email: "asdas@aol.com",
+    password: "ASsadasdD",
+    profileImg: "img"
+}

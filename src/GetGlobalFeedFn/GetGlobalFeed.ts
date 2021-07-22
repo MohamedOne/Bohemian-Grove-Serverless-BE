@@ -1,5 +1,4 @@
 import { HTTPResponse } from "../Global/DTO";
-import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 import { ddbDocClient } from "../Global/DynamoDB";
 import Post from '../Global/Post'
 import { QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
