@@ -4,7 +4,7 @@ interface IPost {
     userName: string,
     postBody: string,
     likes: string[],
-    timeStamp: string,
+    dataKey: string,
     comments: string[]
 }
 
@@ -15,14 +15,14 @@ export class Post implements IPost {
     public userName: string;
     public postBody: string;
     public likes: string[];
-    public timeStamp: string;
+    public dataKey: string;
     public comments: string[];
     public postImg: string;
 
 
-    constructor(post: any,) {
+    constructor(post: any) {
         this.userName = post.userName;
-        this.timeStamp = post.postTime;
+        this.dataKey = post.dataKey;
         this.displayName = post.displayName;
         this.displayImg = post.displayImg;
         this.postBody = post.postBody;

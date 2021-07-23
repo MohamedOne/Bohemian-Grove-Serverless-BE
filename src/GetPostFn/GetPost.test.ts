@@ -1,7 +1,7 @@
 import { ddbDocClient } from '../Global/DynamoDB';
 import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
-import { testUser1, testUser2 } from '../Global/TestData';
-import { handler } from './UpdateUser';
+import { testPost1 } from '../Global/TestData';
+import { handler } from './GetPost';
 import { HTTPResponse } from '../Global/DTO';
 import lambdaEventMock from 'lambda-event-mock';
 
@@ -10,32 +10,30 @@ afterAll(() => {
     ddbDocClient.destroy();
 });
 
-test('it should update the user in the databse', async () => {
+test('it should get a post from the databse', async () => {
     const putParams1 = {
         TableName: process.env.DDB_TABLE_NAME,
-        Item: testUser1
+        Item: testPost1
     }
 
     await ddbDocClient.send(new PutCommand(putParams1));
 
     const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/user/${testUser1.dataKey}`)
-        .method('PUT')
-        .header('test update user')
-        .body(testUser2);
+        .path(`/post/${testPost1.dataKey}`)
+        .method('GET')
+        .header('test get post')
+        .body(testPost1);
 
 
 
     const result = await handler(mockEvent._event);
-
     const params = {
         TableName: process.env.DDB_TABLE_NAME,
         Key: {
-            dataType: "user",
-            dataKey: 'admin'
+            dataType: "post",
+            dataKey: testPost1.dataKey
         }
     }
-
     const check = await ddbDocClient.send(new GetCommand(params));
     const checker = new HTTPResponse(200, check.Item)
 

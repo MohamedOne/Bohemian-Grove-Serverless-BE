@@ -3,8 +3,6 @@ import { ddbDocClient } from "../Global/DynamoDB";
 import { UpdateCommand, UpdateCommandInput } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent } from "aws-lambda"
 import User from "../Global/User";
-import { userAgentMiddleware } from "@aws-sdk/middleware-user-agent";
-import { type } from "os";
 
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
@@ -12,17 +10,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
     if (event.body != null) {
 
-        const body = event.body;
-        const user: any = JSON.parse(body);
+        const user: any = JSON.parse(event.body);
         const updatedUser: User = new User(user);
-        updatedUser.userName = user.dataKey;
+        updatedUser.dataKey = user.dataKey;
 
-        console.log(updatedUser);
         const params: UpdateCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             Key: {
                 dataType: "user",
-                dataKey: updatedUser.userName
+                dataKey: updatedUser.dataKey
             },
             ExpressionAttributeValues: {
                 ":d": updatedUser.displayName,

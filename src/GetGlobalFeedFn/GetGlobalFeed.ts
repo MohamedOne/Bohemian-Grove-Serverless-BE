@@ -3,6 +3,7 @@ import { ddbDocClient } from "../Global/DynamoDB";
 import Post from '../Global/Post'
 import { QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
 
+
 export const handler = async (): Promise<HTTPResponse> => {
     // Your code here
 

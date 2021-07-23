@@ -1,5 +1,5 @@
 export interface IUser {
-    userName: string;
+    dataKey: string;
     displayName: string;
     email?: string;
     password?: string;
@@ -8,7 +8,7 @@ export interface IUser {
 
 export class User implements IUser {
 
-    public userName: string;
+    public dataKey: string;
     public displayName: string;
     public email?: string;
     public password?: string;
@@ -17,13 +17,13 @@ export class User implements IUser {
     // eslint-disable-next-line max-len
     constructor(userNameOrObject: string | any, displayName?: string, profileImg?: string, email?: string) {
         if (typeof userNameOrObject == 'string') {
-            this.userName = userNameOrObject;
+            this.dataKey = userNameOrObject;
             this.displayName = displayName || '';
             this.profileImg = profileImg || '';
             if (email) this.email = email;
 
         } else {
-            this.userName = userNameOrObject.userName;
+            this.dataKey = userNameOrObject.userName;
             this.displayName = userNameOrObject.displayName;
             this.profileImg = userNameOrObject.profileImg;
             if (userNameOrObject.email) this.email = userNameOrObject.email;
