@@ -12,12 +12,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
         const user: any = JSON.parse(event.body);
         const updatedUser: User = new User(user);
-        updatedUser.dataKey = user.dataKey;
 
         const params: UpdateCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             Key: {
-                dataType: "user",
+                dataType: updatedUser.dataType,
                 dataKey: updatedUser.dataKey
             },
             ExpressionAttributeValues: {
@@ -28,13 +27,9 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             UpdateExpression: "SET displayName = :d, email = :e, profileImg = :i",
             ReturnValues: "ALL_NEW"
         }
-        try {
-            const data = await ddbDocClient.send(new UpdateCommand(params));
 
-            return new HTTPResponse(200, data.Attributes);
-        } catch (err) {
-            throw (err);
-        }
+        const data = await ddbDocClient.send(new UpdateCommand(params));
+        return new HTTPResponse(200, data.Attributes);
     }
-    else return new HTTPResponse(400, "request body was null")
+    else return new HTTPResponse(400, "body was null")
 }

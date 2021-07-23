@@ -41,3 +41,19 @@ test('it should update the user in the databse', async () => {
 
     expect(checker).toEqual(result);
 })
+
+test('if body is null it should return a 400 status code saying body was null', async () => {
+
+
+    const mockEvent = lambdaEventMock.apiGateway()
+        .path(`/user/${testUser1.dataKey}`)
+        .method('POST')
+        .header('test get post')
+        .body(null);
+
+    const result = await handler(mockEvent._event);
+
+    expect(result.statusCode).toEqual(400);
+    expect(result.body).toBe('["body was null"]')
+
+})
