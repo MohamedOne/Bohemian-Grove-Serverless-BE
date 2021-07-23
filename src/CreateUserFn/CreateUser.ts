@@ -34,7 +34,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         }
         catch (err) {
             if (err.name == "ConditionalCheckFailedException") {
-
                 return new HTTPResponse(403, "A user with that name already exists.");
             }
         }

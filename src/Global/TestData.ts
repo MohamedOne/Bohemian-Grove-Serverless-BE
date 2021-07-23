@@ -26,6 +26,20 @@ export const testPost2 = {
 }
 export const testPost3 = {
 
+    dataType: "post",
+    userName: "mod",
+    dataKey: "456",
+    displayName: "hahhaa",
+    displayImg: "captain.png",
+    postBody: "I am the captain now",
+    postImg: "captainHat.png",
+    comments: ["this post sucks", "        "],
+    likes: ["asd"]
+
+}
+
+export const testPost4 = {
+
     dataType: undefined,
     userName: "mod",
     dataKey: "456",
