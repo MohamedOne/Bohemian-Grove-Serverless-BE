@@ -16,12 +16,22 @@
   },
   "homepage": "https://github.com/RevatureRobert/Team1-Project2-BE#readme",
   "devDependencies": {
+    "@babel/preset-env": "^7.14.8",
+    "@babel/preset-typescript": "^7.14.5",
+    "@types/aws-lambda": "^8.10.79",
     "@types/jest": "^26.0.24",
     "@types/node": "^16.3.3",
+    "@types/serverless": "^1.78.32",
+    "aws-lambda": "^1.0.6",
+    "babel": "^6.23.0",
     "dotenv": "^10.0.0",
     "jest": "^27.0.6",
     "jest-dynalite": "^3.4.1",
+    "lambda-event-mock": "^1.5.0",
+    "serverless": "^2.52.0",
+    "serverless-plugin-typescript": "^1.1.9",
     "ts-jest": "^27.0.3",
+    "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
   },
   "dependencies": {
