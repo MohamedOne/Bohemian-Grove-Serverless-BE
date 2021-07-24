@@ -4,16 +4,18 @@ Globals:
   Function:
     Environment:
       Variables:
-        DDB_TABLE_NAME: !Ref UserPostDataTbl
-        COG_CLIENT_APPID: !Ref CognitoAppClient
-        ECR_REPO: !GetAtt ImageRepository.RepositoryUri
+        DDB_TABLE_NAME: 
+          Ref: UserPostDataTbl
+        COG_CLIENT_APPID: 
+          Ref: CognitoAppClient
   Api:
     Auth:
       Authorizers:
         BGCognito:
           AuthorizationScopes:
             - openid
-          UserPoolArn: !Ref CognitoUserPool
+          UserPoolArn: 
+            Ref: CognitoUserPool
       DefaultAuthorizer: BGCognito
 
 Description: The AWS SAM template for the Bohemian Grove serverless backend.
@@ -25,25 +27,33 @@ Resources:
     Properties:
       TableName: BG-Data
       KeySchema:
-        - AttributeName: dataType
+        - 
+          AttributeName: dataType
           KeyType: HASH
-        - AttributeName: dataKey
+        - 
+          AttributeName: dataKey
           KeyType: RANGE
       GlobalSecondaryIndexes:
-        - IndexName: userPost-index
+        - 
+          IndexName: userPost-index
           KeySchema:
-            - AttributeName: userName
+            - 
+              AttributeName: userName
               KeyType: HASH
-            - AttributeName: dataKey
+            - 
+              AttributeName: dataKey
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
       AttributeDefinitions:
-        - AttributeName: dataType
+        - 
+          AttributeName: dataType
           AttributeType: S
-        - AttributeName: dataKey
+        - 
+          AttributeName: dataKey
           AttributeType: S
-        - AttributeName: userName
+        - 
+          AttributeName: userName
           AttributeType: S
       ProvisionedThroughput:
         ReadCapacityUnits: 5
@@ -55,7 +65,8 @@ Resources:
     Properties:
       UserPoolName: BG-Auth
       Schema:
-        - AttributeDataType: String
+        - 
+          AttributeDataType: String
           Name: email
           Required: true
       AliasAttributes:
@@ -78,7 +89,8 @@ Resources:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: BG-Auth-AppClient
-      UserPoolId: !Ref CognitoUserPool
+      UserPoolId: 
+        Ref: CognitoUserPool
       AllowedOAuthFlows:
         - implicit
       AllowedOAuthFlowsUserPoolClient: true
@@ -86,21 +98,6 @@ Resources:
         - openid
       ExplicitAuthFlows:
         - ALLOW_USER_PASSWORD_AUTH
-
-  # ECR repository
-  ImageRepository:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: bg-docker
-      RepositoryPolicyText:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: CodeBuildAccess
-            Effect: Allow
-            Principal:
-              Service: codebuild.amazon.com
-            Action:
-              - ecr:*
 
   # S3 buckets
   UserImageStorage:
@@ -113,7 +110,7 @@ Resources:
     Properties:
       FunctionName: BG-CreateUser
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/CreateUserFn/CreateUser.handler
@@ -132,7 +129,7 @@ Resources:
     Properties:
       FunctionName: BG-GetUser
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetUserFn/GetUser.handler
@@ -151,7 +148,7 @@ Resources:
     Properties:
       FunctionName: BG-UpdateUser
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/UpdateUserFn/UpdateUser.handler
@@ -170,7 +167,7 @@ Resources:
     Properties:
       FunctionName: BG-DeleteUser
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/DeleteUserFn/DeleteUser.handler
@@ -189,7 +186,7 @@ Resources:
     Properties:
       FunctionName: BG-SearchUsers
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/SearchUsersFn/SearchUsers.handler
@@ -209,7 +206,7 @@ Resources:
     Properties:
       FunctionName: BG-CreatePost
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/CreatePostFn/CreatePost.handler
@@ -226,7 +223,7 @@ Resources:
     Properties:
       FunctionName: BG-CreateComment
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/CreateCommentFn/CreateComment.handler
@@ -245,7 +242,7 @@ Resources:
     Properties:
       FunctionName: BG-GetPost
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetPostFn/GetPost.handler
@@ -264,7 +261,7 @@ Resources:
     Properties:
       FunctionName: BG-GetGlobalFeed
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetGlobalFeedFn/GetGlobalFeed.handler
@@ -281,7 +278,7 @@ Resources:
     Properties:
       FunctionName: BG-GetUserFeed
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetUserFeedFn/GetUserFeed.handler
@@ -301,7 +298,7 @@ Resources:
     Properties:
       FunctionName: BG-UpdatePost
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/UpdatePostFn/UpdatePost.handler
@@ -320,7 +317,7 @@ Resources:
     Properties:
       FunctionName: BG-LikeUnlikePost
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/LikeUnlikePostFn.handler
@@ -339,7 +336,7 @@ Resources:
     Properties:
       FunctionName: BG-DeletePost
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/DeletePostFn/DeletePost.handler
@@ -358,7 +355,7 @@ Resources:
     Properties:
       FunctionName: BG-DeleteComment
       PackageType: Image
-      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/DeleteCommentFn/DeleteComment.handler
