@@ -22,3 +22,8 @@ phases:
       - docker push 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       - echo Push complete. Deploying SAM template.
       - sam deploy --no-fail-on-empty-changeset
+
+# TODO
+# Package SAM template as cloudformation template during build phase
+# Have CloudFormation deploy the template in a separate phase in CodePipeline
+# Have SNS notify us before the deploy, require 

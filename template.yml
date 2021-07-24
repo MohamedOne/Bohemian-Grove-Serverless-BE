@@ -4,118 +4,203 @@ Globals:
   Function:
     Environment:
       Variables:
-        DDB_TABLE_NAME: bg-data
+        DDB_TABLE_NAME: !Ref UserPostDataTbl
+        COG_CLIENT_APPID: !Ref CognitoAppClient
+        ECR_REPO: !GetAtt ImageRepository.RepositoryUri
   Api:
     Auth:
-      Authorizers: 
+      Authorizers:
         BGCognito:
-          AuthorizationScopes: 
-            - email
-          UserPoolArn: arn:aws:cognito-idp:us-east-2:319115845002:userpool/us-east-2_oYJIkyosz
+          AuthorizationScopes:
+            - openid
+          UserPoolArn: !Ref CognitoUserPool
       DefaultAuthorizer: BGCognito
-    Cors:
 
 Description: The AWS SAM template for the Bohemian Grove serverless backend.
 
-Resources: 
+Resources:
+  # DynamoDB table
+  UserPostDataTbl:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: BG-Data
+      KeySchema:
+        - AttributeName: dataType
+          KeyType: HASH
+        - AttributeName: dataKey
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: userPost-index
+          KeySchema:
+            - AttributeName: userName
+              KeyType: HASH
+            - AttributeName: dataKey
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      AttributeDefinitions:
+        - AttributeName: dataType
+          AttributeType: S
+        - AttributeName: dataKey
+          AttributeType: S
+        - AttributeName: userName
+          AttributeType: S
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  # Cognito user pool
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: BG-Auth
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: true
+      AliasAttributes:
+        - email
+        - preferred_username
+      AutoVerifiedAttributes:
+        - email
+      UsernameConfiguration:
+        CaseSensitive: false
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: true
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+
+  # Cognito app client
+  CognitoAppClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: BG-Auth-AppClient
+      UserPoolId: !Ref CognitoUserPool
+      AllowedOAuthFlows:
+        - implicit
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - openid
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+
+  # ECR repository
+  ImageRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: bg-docker
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: CodeBuildAccess
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazon.com
+            Action:
+              - ecr:*
+
+  # S3 buckets
+  UserImageStorage:
+    
+  PostImageStorage:
+
   # User lambdas
   CreateUserFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-CreateUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/CreateUserFn/CreateUser.handler
       Description: Creates a single user in the DynamoDB table.
-      Events: 
+      Events:
         ApiEvent:
           Type: Api
-          Properties: 
+          Properties:
             Path: /user/{userName}
             Method: post
             RequestParameters:
               - method.request.path.userName
 
-
-  GetUserFn: 
+  GetUserFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/GetUserFn/GetUser.handler
       Description: Gets a single user's information from the DynamoDB table.
-      Events: 
+      Events:
         ApiEvent:
           Type: Api
-          Properties: 
+          Properties:
             Path: /user/{userName}
             Method: get
-            RequestParameters: 
+            RequestParameters:
               - method.request.path.userName
-
 
   UpdateUserFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-UpdateUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/UpdateUserFn/UpdateUser.handler
       Description: Updates a single user's information in the DynamoDB table.
-      Events: 
+      Events:
         ApiEvent:
           Type: Api
-          Properties: 
+          Properties:
             Path: /user/{userName}
             Method: put
-            RequestParameters: 
+            RequestParameters:
               - method.request.path.userName
-
 
   DeleteUserFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-DeleteUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/DeleteUserFn/DeleteUser.handler
       Description: Deletes a single user from the DynamoDB table.
-      Events: 
+      Events:
         ApiEvent:
           Type: Api
-          Properties: 
+          Properties:
             Path: /user/{userName}
             Method: delete
-            RequestParameters: 
+            RequestParameters:
               - method.request.path.userName
-
 
   SearchUsersFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-SearchUsers
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/SearchUsersFn/SearchUsers.handler
       Description: Searches for all users matching a search term in the DynamoDB table.
-      Events: 
+      Events:
         ApiEvent:
           Type: Api
-          Properties: 
+          Properties:
             Path: /user/search/{searchTerm}
             Method: get
-            RequestParameters: 
+            RequestParameters:
               - method.request.path.searchTerm
 
   # Post lambdas
@@ -124,7 +209,7 @@ Resources:
     Properties:
       FunctionName: BG-CreatePost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/CreatePostFn/CreatePost.handler
@@ -136,13 +221,12 @@ Resources:
             Path: /post
             Method: post
 
-
   CreateCommentFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-CreateComment
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/CreateCommentFn/CreateComment.handler
@@ -156,13 +240,12 @@ Resources:
             RequestParameters:
               - method.request.path.postId
 
-
   GetPostFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetPost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/GetPostFn/GetPost.handler
@@ -176,13 +259,12 @@ Resources:
             RequestParameters:
               - method.request.path.postId
 
-
   GetGlobalFeedFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetGlobalFeed
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/GetGlobalFeedFn/GetGlobalFeed.handler
@@ -194,13 +276,12 @@ Resources:
             Path: /post
             Method: get
 
-
   GetUserFeedFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetUserFeed
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/GetUserFeedFn/GetUserFeed.handler
@@ -215,13 +296,12 @@ Resources:
               - method.request.path.userName
               - method.request.querystring.following
 
-
   UpdatePostFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-UpdatePost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/UpdatePostFn/UpdatePost.handler
@@ -235,13 +315,31 @@ Resources:
             RequestParameters:
               - method.request.path.postId
 
+  LikeUnlikePostFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-LikeUnlikePost
+      PackageType: Image
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
+      ImageConfig:
+        Command:
+          - /bg/LikeUnlikePostFn.handler
+      Description: Toggles the 'like' status on a post for a user.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/{postId}
+            Method: patch
+            RequestParameters:
+              - method.request.path.postId
 
   DeletePostFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-DeletePost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/DeletePostFn/DeletePost.handler
@@ -255,13 +353,12 @@ Resources:
             RequestParameters:
               - method.request.path.postId
 
-
   DeleteCommentFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-DeleteComment
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageUri: !GetAtt ImageRepository.RepositoryUri
       ImageConfig:
         Command:
           - /bg/DeleteCommentFn/DeleteComment.handler
@@ -275,7 +372,3 @@ Resources:
             RequestParameters:
               - method.request.path.postId
               - method.request.path.commentId
-
-  # Image lambdas
-  # AddUserImgFn:
-  # ChangeUserImgFn:
