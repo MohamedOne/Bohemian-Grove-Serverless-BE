@@ -1,0 +1,53 @@
+import { HTTPResponse } from "../Global/DTO";
+import { ddbDocClient } from "../Global/DynamoDB";
+import { APIGatewayProxyEvent } from "aws-lambda"
+import {PutCommand, PutCommandInput} from "@aws-sdk/lib-dynamodb";
+import Post from "src/Global/Post";
+
+
+export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
+
+    //TODO
+    
+    //Check if we have event body and specifically if we have a username in event
+    if(event.body && event.requestContext.authorizer) {
+        let body = event.body;
+        const post: any = JSON.parse(body);
+        const newPost: Post = new Post(post);
+
+        //Check username in incoming post body against username in { event.requestContext.authorizer.claims.username }
+        if(newPost.userName === event.requestContext.authorizer.claims.username) {
+            //Proceed with adding new post 
+            const params: PutCommandInput = {
+                TableName: process.env.DDB_Table_Name, 
+                Item: {
+                    dataType : "post",
+                    dataKey: newPost.timeStamp,
+                    displayName: newPost.displayName,
+                    userName: newPost.userName,
+                    displayImg: newPost.displayImg,
+                    postBody: newPost.postBody,
+                    likes: newPost.likes,
+                    timeStamp: newPost.timeStamp,
+                    comments: newPost.comments,
+                    postImg: newPost.postImg,
+                },
+                ReturnValues: "UPDATED_NEW"
+            }
+        
+            try {
+                const data = await ddbDocClient.send(new PutCommand(params));
+                return new HTTPResponse(200, data.Attributes);
+            } catch (err) {
+                return new HTTPResponse(400, "Unable to add post");
+            }
+        } else {
+        return new HTTPResponse(400, "Unable to add post");
+        } 
+
+    } else {
+        //Default response if we're unable to add post
+        return new HTTPResponse(400, "Unable to add post");
+
+    }
+}
