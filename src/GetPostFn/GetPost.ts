@@ -8,20 +8,18 @@ import { HTTPResponse } from "../Global/DTO";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
-    if (event.body != null) {
-        const postId = JSON.parse(event.body);
+    if (event.pathParameters) {
 
         const params: GetCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             Key: {
                 dataType: "post",
-                dataKey: String(postId)
+                dataKey: event.pathParameters.postId
             }
         }
-        console.log(params);
         const res = await ddbDocClient.send(new GetCommand(params));
         return new HTTPResponse(200, res.Item);
 
     }
-    return new HTTPResponse(400, "body was null");
+    return new HTTPResponse(400, "path params was null");
 }

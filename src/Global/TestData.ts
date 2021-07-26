@@ -55,7 +55,7 @@ export const testPost4 = {
 
 export const testUser1 = {
 
-    dataKey: "admin",
+    dataKey: "sir",
     dataType: "user",
     displayName: "captain",
     email: "asdas@gmail.com",
@@ -71,11 +71,20 @@ export const testUser2 = {
     profileImg: "img"
 
 }
-export const testUser3 = {
+export const testUser4 = {
 
     dataKey: undefined,
     dataType: undefined,
     displayName: undefined,
     email: undefined,
     profileImg: undefined
+}
+export const testUser3 = {
+
+    dataKey: "joe",
+    dataType: "user",
+    displayName: "mama",
+    email: "asdas@yahoo.com",
+    profileImg: "img"
+
 }
