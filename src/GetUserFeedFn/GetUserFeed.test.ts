@@ -1,7 +1,7 @@
 
 import { ddbDocClient } from '../Global/DynamoDB'
 import { PutCommand, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
-import { testPost1, testPost2, testPost4, testUser1 } from '../Global/TestData'
+import { testPost1, testPost2, testPost3, testPost4, testUser1 } from '../Global/TestData'
 import { handler } from './GetUserFeed'
 import { HTTPResponse } from '../Global/DTO';
 import lambdaEventMock from "lambda-event-mock"
@@ -21,7 +21,7 @@ test('it should get all posts from user provided', async () => {
     }
     const putParams3 = {
         TableName: process.env.DDB_TABLE_NAME,
-        Item: testPost4
+        Item: testPost3
     }
 
     await ddbDocClient.send(new PutCommand(putParams1));
@@ -37,5 +37,5 @@ test('it should get all posts from user provided', async () => {
     const result = await handler(mockEvent._event);
 
 
-    expect(result.body).toEqual(testUser1.dataKey);
+    expect(result.body).toEqual(test.dataKey);
 })

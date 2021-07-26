@@ -38,3 +38,20 @@ test('it should return the users from the search params', async () => {
     const checker = new HTTPResponse(200, [testUser1])
     expect(result.body).toEqual(checker.body);
 })
+
+
+test('if path params is null it should return a 400 status code saying path params was null', async () => {
+
+
+    const mockEvent = lambdaEventMock.apiGateway()
+        .path(`/user/search`)
+        .method('GET')
+
+
+
+    const result = await handler(mockEvent._event);
+
+    expect(result.statusCode).toEqual(400);
+    expect(result.body).toBe('["path params was null"]')
+
+})

@@ -1,7 +1,7 @@
 
 import { ddbDocClient } from '../Global/DynamoDB'
 import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { testPost1, testPost2, testPost4 } from '../Global/TestData'
+import { testPost1, testPost2, testPost3, testPost4 } from '../Global/TestData'
 import { handler } from './GetGlobalFeed'
 import { HTTPResponse } from '../Global/DTO';
 
@@ -20,7 +20,7 @@ test('it should get all posts for the global feed', async () => {
   }
   const putParams3 = {
     TableName: process.env.DDB_TABLE_NAME,
-    Item: testPost4
+    Item: testPost3
   }
 
   await ddbDocClient.send(new PutCommand(putParams1));

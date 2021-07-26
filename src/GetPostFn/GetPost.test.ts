@@ -39,7 +39,7 @@ test('it should get a post from the databse', async () => {
     expect(checker).toEqual(result);
 })
 
-test('if body is null it should return a 400 status code saying body was null', async () => {
+test('if path params is null it should return a 400 status code saying path was null', async () => {
 
 
     const mockEvent = lambdaEventMock.apiGateway()

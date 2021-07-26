@@ -20,5 +20,5 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         const result = await ddbDocClient.send(new QueryCommand(params));
         return new HTTPResponse(200, result.Items);
     }
-    return new HTTPResponse(400, "path params were null")
+    return new HTTPResponse(400, "path params was null")
 }
