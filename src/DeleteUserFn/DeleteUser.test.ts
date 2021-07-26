@@ -49,6 +49,6 @@ test('it should delete requested user', async() => {
   const check = await ddbDocClient.send(new QueryCommand(params1));
   const checker = new HTTPResponse(200, check)
 
-  expect(checker).toEqual(checker);
+  expect(result).toEqual(checker);
 
 })

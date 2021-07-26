@@ -3,6 +3,7 @@ export const testPost1 = {
     userName: "admin",
     dataKey: "123",
     dataType: "post",
+    timeStamp: "12:24:36:11/12/21",
     displayName: "captain",
     displayImg: "captain.png",
     postBody: "I am the captain now",
