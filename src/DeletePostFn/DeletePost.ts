@@ -9,7 +9,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
         //Take timestamp key from path parameters
         console.log("Received timeStamp: " + event.pathParameters.timeStamp);
-        let timeStamp = event.pathParameters.postId;
+        let timeStamp = event.pathParameters.timeStamp;
 
         const params: DeleteCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,

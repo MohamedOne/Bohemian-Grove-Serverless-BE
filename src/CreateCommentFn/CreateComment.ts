@@ -3,39 +3,40 @@ import { ddbDocClient } from "../Global/DynamoDB";
 import { APIGatewayProxyEvent } from "aws-lambda"
 import User from "src/Global/User";
 import {UpdateCommand, UpdateCommandInput} from "@aws-sdk/lib-dynamodb";
+import Comment from "../Global/Comment";
 
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
-    // Your code here
 
-    let comment;
-    let timestamp;
+    let postTimeStamp;
     let commentTimestamp = Date.now();
 
-    if (event.body) {
+    if (event.body && event.pathParameters) {
         
-        let body = JSON.parse(event.body)
-        console.log("Received comment: " + body.comment);
-        comment = body.comment;
-        comment.timestamp = commentTimestamp;
-    }
+        let body = event.body
+        const incomingComm: any = JSON.parse(body);
+        const incomingComment: Comment = new Comment(incomingComm);
+        const temp = {
+            timeStamp: incomingComment.timeStamp,
+            userName: incomingComment.userName,
+            body: incomingComment.body
+        }
+        console.log("Received comment: " + incomingComment);
 
-    if (event.pathParameters ) {
-        console.log("Received timestamp: " + event.pathParameters.postId);
-        timestamp = event.pathParameters.postId;
-    }
+        console.log("Received timestamp: " + event.pathParameters.timeStamp);
+        postTimeStamp = event.pathParameters.timeStamp;
 
     const params: UpdateCommandInput = {
         TableName: process.env.DDB_TABLE_NAME,
         Key: {
             dataType: "post",
-            dataKey: timestamp,
+            dataKey: postTimeStamp,
         },
         ExpressionAttributeNames: {
             "#c": "comments",
         },
         ExpressionAttributeValues : {
-            ":nc": comment,
+            ":nc": temp,
         },
         UpdateExpression: 
             "SET #c = list_append(#c, :nc)"
@@ -45,13 +46,13 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
     try {
         const data = await ddbDocClient.send(new UpdateCommand(params));
-
         return new HTTPResponse(200, data.Attributes);
     } catch (err) {
+        console.log(err);
         return new HTTPResponse(400, "Unable to add comment");
         
     }
 
-
-   
+}
+return new HTTPResponse(400, "Unable to add comment");
 }

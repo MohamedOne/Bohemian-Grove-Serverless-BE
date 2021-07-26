@@ -20,25 +20,27 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             //Proceed with adding new post 
             const params: PutCommandInput = {
                 TableName: process.env.DDB_Table_Name, 
+
                 Item: {
+                    dataKey: `${newPost.timeStamp}`,
                     dataType : "post",
-                    dataKey: newPost.timeStamp,
-                    displayName: newPost.displayName,
-                    userName: newPost.userName,
-                    displayImg: newPost.displayImg,
-                    postBody: newPost.postBody,
-                    likes: newPost.likes,
-                    timeStamp: newPost.timeStamp,
-                    comments: newPost.comments,
-                    postImg: newPost.postImg,
+                    displayName: `${newPost.displayName}`,
+                    userName: `${newPost.userName}`,
+                    displayImg: `${newPost.displayImg}`,
+                    postBody: `${newPost.postBody}`,
+                    likes: `${newPost.likes}`,
+                    timeStamp: `${newPost.timeStamp}`,
+                    comments: `${newPost.comments}`,
+                    postImg: `${newPost.postImg}`,
                 },
-                ReturnValues: "UPDATED_NEW"
+                ReturnValues: "ALL_OLD"
             }
         
             try {
                 const data = await ddbDocClient.send(new PutCommand(params));
-                return new HTTPResponse(200, data.Attributes);
+                return new HTTPResponse(200, "Post added successfully", data.Attributes);
             } catch (err) {
+                console.log(err)
                 return new HTTPResponse(400, "Unable to add post");
             }
         } else {
@@ -47,7 +49,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
     } else {
         //Default response if we're unable to add post
-        return new HTTPResponse(400, "Unable to add post");
+        return new HTTPResponse(400, "Unable to add post", "most outer if-else");
 
     }
 }
