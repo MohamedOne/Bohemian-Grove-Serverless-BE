@@ -1,7 +1,7 @@
 
 import { ddbDocClient } from '../Global/DynamoDB'
 import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { testPost1, testPost2, testPost3 } from '../Global/TestData'
+import { testPost1, testPost2, testPost4 } from '../Global/TestData'
 import { handler } from './GetGlobalFeed'
 import { HTTPResponse } from '../Global/DTO';
 
@@ -20,7 +20,7 @@ test('it should get all posts for the global feed', async () => {
   }
   const putParams3 = {
     TableName: process.env.DDB_TABLE_NAME,
-    Item: testPost3
+    Item: testPost4
   }
 
   await ddbDocClient.send(new PutCommand(putParams1));
@@ -31,11 +31,15 @@ test('it should get all posts for the global feed', async () => {
 
   const params = {
     TableName: process.env.DDB_TABLE_NAME,
-    KeyConditionExpression: 'dataType = post'
+    KeyConditionExpression: 'dataType = :p',
+    ExpressionAttributeValues: {
+      ":p": "post"
+    },
   }
 
   const check = await ddbDocClient.send(new QueryCommand(params));
-  const checker = new HTTPResponse(200, check)
+  const checker = new HTTPResponse(200, check.Items)
 
-  expect(checker).toEqual(result);
+
+  expect(JSON.parse(checker.body)).toEqual(JSON.parse(result.body));
 })

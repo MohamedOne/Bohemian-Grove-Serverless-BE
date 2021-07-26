@@ -19,10 +19,12 @@ test('it should get a post from the databse', async () => {
     await ddbDocClient.send(new PutCommand(putParams1));
 
     const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/post/${testPost1.dataKey}`)
+        .path(`/post/`)
         .method('GET')
         .header('test get post')
-        .body(testPost1);
+        .body(testPost1.dataKey);
+
+
 
 
 

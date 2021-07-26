@@ -15,12 +15,8 @@ export const handler = async (): Promise<HTTPResponse> => {
         KeyConditionExpression: 'dataType = :p'
 
     }
-    let feed: Post[] = [];
-    try {
-        const data = await ddbDocClient.send(new QueryCommand(params));
-        feed = data.Items as Post[];
-        return new HTTPResponse(200, feed);
-    } catch (err) {
-        throw (err);
-    }
+    const data = await ddbDocClient.send(new QueryCommand(params));
+    const feed = data.Items;
+    return new HTTPResponse(200, feed);
+
 }

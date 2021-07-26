@@ -9,16 +9,16 @@ import { HTTPResponse } from "../Global/DTO";
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
     if (event.body != null) {
-        const post: any = JSON.parse(event.body);
-        const getPost: Post = new Post(post);
+        const postId = JSON.parse(event.body);
 
         const params: GetCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             Key: {
                 dataType: "post",
-                dataKey: getPost.dataKey
+                dataKey: String(postId)
             }
         }
+        console.log(params);
         const res = await ddbDocClient.send(new GetCommand(params));
         return new HTTPResponse(200, res.Item);
 
