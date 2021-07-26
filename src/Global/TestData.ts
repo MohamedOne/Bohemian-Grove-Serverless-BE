@@ -52,9 +52,24 @@ export const testPost4 = {
 
 }
 
+export const testPost4 = {
+
+    dataType: "post",
+    userName: "mod",
+    dataKey: "456",
+    displayName: "hahhaa",
+    displayImg: "captain.png",
+    postBody: "I am the captain now",
+    postImg: "captainHat.png",
+    comments: ["this post sucks", "        "],
+    likes: [""]
+
+}
+
+
 export const testUser1 = {
 
-    dataKey: "admin",
+    dataKey: "sir",
     dataType: "user",
     displayName: "captain",
     email: "asdas@gmail.com",
@@ -70,11 +85,20 @@ export const testUser2 = {
     profileImg: "img"
 
 }
-export const testUser3 = {
+export const testUser4 = {
 
     dataKey: undefined,
     dataType: undefined,
     displayName: undefined,
     email: undefined,
     profileImg: undefined
+}
+export const testUser3 = {
+
+    dataKey: "joe",
+    dataType: "user",
+    displayName: "mama",
+    email: "asdas@yahoo.com",
+    profileImg: "img"
+
 }

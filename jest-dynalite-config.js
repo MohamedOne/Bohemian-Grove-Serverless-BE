@@ -16,9 +16,10 @@ module.exports = {
           IndexName: "displayName-index",
           KeySchema: [
             {
-              AttributeName: "displayName",
+              AttributeName: "dataType",
               KeyType: "HASH"
-            }
+            },
+
           ],
           Projection: {
             ProjectionType: "ALL"

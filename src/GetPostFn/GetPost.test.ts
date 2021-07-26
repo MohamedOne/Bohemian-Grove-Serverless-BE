@@ -19,12 +19,11 @@ test('it should get a post from the databse', async () => {
     await ddbDocClient.send(new PutCommand(putParams1));
 
     const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/post/${testPost1.dataKey}`)
+        .path(`/post/`)
         .method('GET')
         .header('test get post')
-        .body(testPost1);
 
-
+    mockEvent._event.pathParameters = { postId: testPost1.dataKey }
 
     const result = await handler(mockEvent._event);
     const params = {
@@ -44,15 +43,15 @@ test('if body is null it should return a 400 status code saying body was null', 
 
 
     const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/user/${testPost1.dataKey}`)
+        .path(`/user/`)
         .method('POST')
         .header('test get post')
-        .body(null);
+
 
     const result = await handler(mockEvent._event);
 
     expect(result.statusCode).toEqual(400);
-    expect(result.body).toBe('["body was null"]')
+    expect(result.body).toBe('["path params was null"]')
 
 })
 
