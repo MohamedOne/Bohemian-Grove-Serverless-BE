@@ -52,6 +52,6 @@ test('it should delete post', async() => {
   const check = ddbDocClient.send(new QueryCommand(params1));
   const checker = new HTTPResponse(200, check)
 
-  expect(checker).toEqual(checker);
+  expect(result).toEqual(checker);
 
 })

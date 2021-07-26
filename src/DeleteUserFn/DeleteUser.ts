@@ -5,7 +5,7 @@ import {DeleteCommand, DeleteCommandInput} from "@aws-sdk/lib-dynamodb";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
-
+    
     if (event.pathParameters) {
 
             //Take username key from path parameters
@@ -14,6 +14,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
             const params: DeleteCommandInput = {
                 TableName: process.env.DDB_TABLE_NAME,
+                
                 Key: {
                     dataType: "user",
                     dataKey: userName
@@ -25,10 +26,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 await ddbDocClient.send(new DeleteCommand(params));
                 return new HTTPResponse(200, "User deleted successfully!");
             } catch (err) {
+                console.log(err);
                 return new HTTPResponse(400, "Unable to delete user");  
         }
         }   
 
         //Default response if we can't grab user
-        return new HTTPResponse(400, "Unable to delete user");
+        return new HTTPResponse(400, "Unable to delete user", event);
     }

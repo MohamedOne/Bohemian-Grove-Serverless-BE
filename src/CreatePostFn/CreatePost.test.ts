@@ -25,10 +25,11 @@ test('it should create a new post', async() => {
             comments: ["hi", "iam", "writing my first comment"],
             postImg: "anotherImg.png",
         },
-        ReturnValues: "UPDATED_NEW"
+        ReturnValues: "ALL_OLD"
     }
 
-    await ddbDocClient.send(new PutCommand(params));
+
+    const putResult = await ddbDocClient.send(new PutCommand(params));
 
     const mockEvent = lambdaEventMock.apiGateway()
     .path(`/post/Dec152016`)
@@ -37,7 +38,7 @@ test('it should create a new post', async() => {
 
     const result = await handler(mockEvent._event);
 
-    expect(result).toBeCalled();
+    expect(putResult).toEqual(result.body);
 
 })
 

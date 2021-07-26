@@ -28,6 +28,8 @@ test('it should get all posts for the global feed', async () => {
   await ddbDocClient.send(new PutCommand(putParams2));
   await ddbDocClient.send(new PutCommand(putParams3));
 
+  
+
   const result = await handler();
 
 
@@ -39,8 +41,11 @@ test('it should get all posts for the global feed', async () => {
     KeyConditionExpression: "dataType = #p"
   }
 
+  const firstPassQuery = ddbDocClient.send(new QueryCommand(params));
+  const firstCheck = new HTTPResponse(200, firstPassQuery);
+
   const check =  ddbDocClient.send(new QueryCommand(params));
   const checker = new HTTPResponse(200, check)
 
-  expect(checker).toEqual(result);
+  expect(checker).toEqual(firstCheck);
 })

@@ -2,7 +2,7 @@ import { HTTPResponse } from "../Global/DTO";
 import { ddbDocClient } from "../Global/DynamoDB";
 import { APIGatewayProxyEvent } from "aws-lambda"
 import {PutCommand, PutCommandInput} from "@aws-sdk/lib-dynamodb";
-import Post from "src/Global/Post";
+import Post from "../Global/Post";
 
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {

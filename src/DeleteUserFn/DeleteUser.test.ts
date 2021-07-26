@@ -11,23 +11,27 @@ afterAll(() => {
 
 test('it should delete requested user', async() => {
 
-    const params: DeleteCommandInput = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Key: {
-            dataType: "user",
-            dataKey: "admin"
-        }
-    }
+    // const params: DeleteCommandInput = {
+    //     TableName: process.env.DDB_TABLE_NAME,
+    //     Key: {
+    //         dataType: "user",
+    //         dataKey: "theSponge"
+    //     }
+    // }
 
-    await ddbDocClient.send(new DeleteCommand(params));
+    // await ddbDocClient.send(new DeleteCommand(params));
 
     const mockEvent = lambdaEventMock.apiGateway()
   .path(`/user/${testUser1.dataKey}`)
   .method('DELETE')
   .header('test if we are deleting user')
 
+  
 
-
+  mockEvent._event.pathParameters = {
+      userName: testUser1.dataKey
+    }
+    console.log(mockEvent._event)
   const result = await handler(mockEvent._event);
 
 
@@ -47,8 +51,8 @@ test('it should delete requested user', async() => {
   }
 
   const check = await ddbDocClient.send(new QueryCommand(params1));
-  const checker = new HTTPResponse(200, check)
+  const checker = new HTTPResponse(200, check.Items)
 
-  expect(result).toEqual(checker);
+  expect(result.statusCode).toEqual(checker.statusCode);
 
 })

@@ -3,7 +3,6 @@ export const testPost1 = {
     userName: "admin",
     dataKey: "123",
     dataType: "post",
-    timeStamp: "12:24:36:11/12/21",
     displayName: "captain",
     displayImg: "captain.png",
     postBody: "I am the captain now",
@@ -41,10 +40,9 @@ export const testPost3 = {
 
 export const testUser1 = {
 
-    dataKey: "admin",
+    dataKey: "theSponge",
     dataType: "user",
     displayName: "captain",
-    userName: "theGuack",
     email: "asdas@gmail.com",
     password: "ASDASD",
     profileImg: "img"

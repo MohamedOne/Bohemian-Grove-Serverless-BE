@@ -10,7 +10,7 @@ afterAll(() => {
     ddbDocClient.destroy();
 });
 
-test('it should update the postBody in the databse', async () => {
+test('it should update the postBody in the database', async () => {
     const putParams1 = {
         TableName: process.env.DDB_TABLE_NAME,
         Item: testPost1
@@ -18,9 +18,11 @@ test('it should update the postBody in the databse', async () => {
 
     await ddbDocClient.send(new PutCommand(putParams1));
 
+    testPost1.postBody = "new post body bby";
     const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/post/${testPost1.dataType}`)
+        .path(`/post/${testPost1.dataKey}`)
         .method('PUT')
+        
         .header('test update post')
         .body(testPost1);
 

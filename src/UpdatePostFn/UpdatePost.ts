@@ -2,7 +2,7 @@ import { HTTPResponse } from "../Global/DTO";
 import { ddbDocClient } from "../Global/DynamoDB";
 import { APIGatewayProxyEvent } from "aws-lambda"
 import {DeleteCommand, DeleteCommandInput, UpdateCommand, UpdateCommandInput} from "@aws-sdk/lib-dynamodb";
-import Post from "src/Global/Post";
+import Post from "../Global/Post";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
@@ -17,8 +17,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         const post: any = JSON.parse(body);
         const incomingPost: Post = new Post(post);
         let postBody = incomingPost.postBody;
-
-
 
 
         const params: UpdateCommandInput = {
