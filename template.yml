@@ -15,7 +15,7 @@ Globals:
           AuthorizationScopes:
             - openid
           UserPoolArn: 
-            Ref: CognitoUserPool
+            Fn::GetAtt: [ CognitoUserPool, Arn ]
       DefaultAuthorizer: BGCognito
 
 Description: The AWS SAM template for the Bohemian Grove serverless backend.
@@ -27,33 +27,28 @@ Resources:
     Properties:
       TableName: BG-Data
       KeySchema:
-        - 
-          AttributeName: dataType
+        - AttributeName: dataType
           KeyType: HASH
-        - 
-          AttributeName: dataKey
+        - AttributeName: dataKey
           KeyType: RANGE
       GlobalSecondaryIndexes:
-        - 
-          IndexName: userPost-index
+        - IndexName: userPost-index
           KeySchema:
-            - 
-              AttributeName: userName
+            - AttributeName: userName
               KeyType: HASH
-            - 
-              AttributeName: dataKey
+            - AttributeName: dataKey
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
       AttributeDefinitions:
-        - 
-          AttributeName: dataType
+        - AttributeName: dataType
           AttributeType: S
-        - 
-          AttributeName: dataKey
+        - AttributeName: dataKey
           AttributeType: S
-        - 
-          AttributeName: userName
+        - AttributeName: userName
           AttributeType: S
       ProvisionedThroughput:
         ReadCapacityUnits: 5
@@ -65,8 +60,7 @@ Resources:
     Properties:
       UserPoolName: BG-Auth
       Schema:
-        - 
-          AttributeDataType: String
+        - AttributeDataType: String
           Name: email
           Required: true
       AliasAttributes:
@@ -98,11 +92,14 @@ Resources:
         - openid
       ExplicitAuthFlows:
         - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      CallbackURLs:
+        - https://eaxmple.com/callback
 
   # S3 buckets
-  UserImageStorage:
-    
-  PostImageStorage:
+  # UserImageStorage:
+  #   
+  # PostImageStorage:
 
   # User lambdas
   CreateUserFn:
@@ -110,7 +107,6 @@ Resources:
     Properties:
       FunctionName: BG-CreateUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/CreateUserFn/CreateUser.handler
@@ -123,13 +119,16 @@ Resources:
             Method: post
             RequestParameters:
               - method.request.path.userName
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   GetUserFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetUserFn/GetUser.handler
@@ -142,13 +141,16 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.userName
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   UpdateUserFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-UpdateUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/UpdateUserFn/UpdateUser.handler
@@ -161,13 +163,16 @@ Resources:
             Method: put
             RequestParameters:
               - method.request.path.userName
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   DeleteUserFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-DeleteUser
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/DeleteUserFn/DeleteUser.handler
@@ -180,13 +185,16 @@ Resources:
             Method: delete
             RequestParameters:
               - method.request.path.userName
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   SearchUsersFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-SearchUsers
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/SearchUsersFn/SearchUsers.handler
@@ -199,6 +207,32 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.searchTerm
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
+
+  FollowUnfollowFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-FollowUnfollow
+      PackageType: Image
+      ImageConfig:
+        Command:
+          - /bg/FollowUnfollowFn/FollowUnfollow.handler
+      Description: Follows or unfollows a user. 
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /user/{userName}/follow
+            Method: post
+            RequestParameters:
+              - method.request.path.userName
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   # Post lambdas
   CreatePostFn:
@@ -206,7 +240,6 @@ Resources:
     Properties:
       FunctionName: BG-CreatePost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/CreatePostFn/CreatePost.handler
@@ -217,13 +250,16 @@ Resources:
           Properties:
             Path: /post
             Method: post
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   CreateCommentFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-CreateComment
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/CreateCommentFn/CreateComment.handler
@@ -236,13 +272,16 @@ Resources:
             Method: post
             RequestParameters:
               - method.request.path.postId
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   GetPostFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetPost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetPostFn/GetPost.handler
@@ -255,13 +294,16 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.postId
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   GetGlobalFeedFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetGlobalFeed
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetGlobalFeedFn/GetGlobalFeed.handler
@@ -272,13 +314,16 @@ Resources:
           Properties:
             Path: /post
             Method: get
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   GetUserFeedFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-GetUserFeed
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/GetUserFeedFn/GetUserFeed.handler
@@ -292,13 +337,16 @@ Resources:
             RequestParameters:
               - method.request.path.userName
               - method.request.querystring.following
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   UpdatePostFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-UpdatePost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/UpdatePostFn/UpdatePost.handler
@@ -311,13 +359,16 @@ Resources:
             Method: put
             RequestParameters:
               - method.request.path.postId
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   LikeUnlikePostFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-LikeUnlikePost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/LikeUnlikePostFn.handler
@@ -330,13 +381,16 @@ Resources:
             Method: patch
             RequestParameters:
               - method.request.path.postId
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   DeletePostFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-DeletePost
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/DeletePostFn/DeletePost.handler
@@ -349,13 +403,16 @@ Resources:
             Method: delete
             RequestParameters:
               - method.request.path.postId
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   DeleteCommentFn:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: BG-DeleteComment
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
           - /bg/DeleteCommentFn/DeleteComment.handler
@@ -369,3 +426,7 @@ Resources:
             RequestParameters:
               - method.request.path.postId
               - method.request.path.commentId
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
