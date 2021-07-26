@@ -8,12 +8,17 @@ Globals:
           Ref: UserPostDataTbl
         COG_CLIENT_APPID: 
           Ref: CognitoAppClient
+        S3_USER_BUCKET:
+          Ref: UserImageStorage
+        S3_POST_BUCKET:
+          Ref: PostImageStorage
   Api:
     Auth:
       Authorizers:
         BGCognito:
           AuthorizationScopes:
             - openid
+            - aws.cognito.signin.user.admin
           UserPoolArn: 
             Fn::GetAtt: [ CognitoUserPool, Arn ]
       DefaultAuthorizer: BGCognito
@@ -97,9 +102,13 @@ Resources:
         - https://eaxmple.com/callback
 
   # S3 buckets
-  # UserImageStorage:
-  #   
-  # PostImageStorage:
+  UserImageStorage:
+    BucketName: bg-user-images
+    AccessControl: PublicRead    
+     
+  PostImageStorage:
+    BucketName: bg-post-images
+    AccessControl: PublicRead
 
   # User lambdas
   CreateUserFn:
@@ -426,6 +435,27 @@ Resources:
             RequestParameters:
               - method.request.path.postId
               - method.request.path.commentId
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
+
+  # Test lambdas
+  TestS3Fn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-Test
+      PackageType: Image
+      ImageConfig:
+        Command:
+          - /bg/TestS3Fn/TestS3.handler
+      Description: A lambda to be used as a test for S3 buckets.
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /test
+            Method: post
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
