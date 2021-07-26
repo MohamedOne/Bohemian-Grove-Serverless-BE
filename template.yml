@@ -11,8 +11,10 @@ Globals:
         S3_USER_BUCKET:
           Ref: UserImageStorage
         S3_POST_BUCKET:
-          Ref: PostImageStorage
+          Ref: PostImageStorage    
   Api:
+    BinaryMediaTypes:
+      - multipart~1form-data
     Auth:
       Authorizers:
         BGCognito:
@@ -103,12 +105,16 @@ Resources:
 
   # S3 buckets
   UserImageStorage:
-    BucketName: bg-user-images
-    AccessControl: PublicRead    
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: bg-user-images
+      AccessControl: PublicRead    
      
   PostImageStorage:
-    BucketName: bg-post-images
-    AccessControl: PublicRead
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: bg-post-images
+      AccessControl: PublicRead
 
   # User lambdas
   CreateUserFn:
@@ -128,6 +134,7 @@ Resources:
             Method: post
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonS3FullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -172,6 +179,7 @@ Resources:
             Method: put
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonS3FullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -194,6 +202,7 @@ Resources:
             Method: delete
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonS3FullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -259,6 +268,7 @@ Resources:
           Properties:
             Path: /post
             Method: post
+      Policies: AmazonS3FullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -412,6 +422,7 @@ Resources:
             Method: delete
             RequestParameters:
               - method.request.path.postId
+      Policies: AmazonS3FullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -456,6 +467,7 @@ Resources:
           Properties:
             Path: /test
             Method: post
+      Policies: AmazonS3FullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
