@@ -43,6 +43,7 @@ export const testUser1 = {
     dataKey: "admin",
     dataType: "user",
     displayName: "captain",
+    userName: "theGuack",
     email: "asdas@gmail.com",
     password: "ASDASD",
     profileImg: "img"

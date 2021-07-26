@@ -2,18 +2,23 @@ import { HTTPResponse } from "../Global/DTO";
 import { ddbDocClient } from "../Global/DynamoDB";
 import { APIGatewayProxyEvent } from "aws-lambda"
 import {DeleteCommand, DeleteCommandInput, UpdateCommand, UpdateCommandInput} from "@aws-sdk/lib-dynamodb";
+import Post from "src/Global/Post";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
     if (event.pathParameters && event.body) {
 
         //Take timestamp key from path parameters
-        console.log("Received timeStamp: " + event.pathParameters.timeStamp);
-        let timeStamp = event.pathParameters.timeStamp;
+        console.log("Received timeStamp: " + event.pathParameters.postId);
+        let timeStamp = event.pathParameters.postId;
 
         //Get new postBody from { event.body }
-        let body = JSON.parse(event.body);
-        let postBody = body.postBody;
+        let body = event.body;
+        const post: any = JSON.parse(body);
+        const incomingPost: Post = new Post(post);
+        let postBody = incomingPost.postBody;
+
+
 
 
         const params: UpdateCommandInput = {

@@ -1,9 +1,10 @@
 
 import { ddbDocClient } from '../Global/DynamoDB'
-import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
 import { testPost1, testPost2, testPost3 } from '../Global/TestData'
 import { handler } from './GetGlobalFeed'
 import { HTTPResponse } from '../Global/DTO';
+import lambdaEventMock from 'lambda-event-mock';
 
 afterAll(() => {
   ddbDocClient.destroy();
@@ -29,12 +30,16 @@ test('it should get all posts for the global feed', async () => {
 
   const result = await handler();
 
-  const params = {
+
+  const params: QueryCommandInput = {
     TableName: process.env.DDB_TABLE_NAME,
-    KeyConditionExpression: 'dataType = post'
+    ExpressionAttributeNames: {
+      "#p": "post"
+    },
+    KeyConditionExpression: "dataType = #p"
   }
 
-  const check = await ddbDocClient.send(new QueryCommand(params));
+  const check =  ddbDocClient.send(new QueryCommand(params));
   const checker = new HTTPResponse(200, check)
 
   expect(checker).toEqual(result);

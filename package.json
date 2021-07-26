@@ -38,5 +38,11 @@
     "@aws-sdk/client-dynamodb": "^3.22.0",
     "@aws-sdk/lib-dynamodb": "^3.22.0",
     "@aws-sdk/util-dynamodb": "^3.22.0"
+  },
+  "jest": {
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ]
   }
 }
