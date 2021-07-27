@@ -8,14 +8,12 @@ export const testPost1 = {
     postBody: "I am the captain now",
     postImg: "captainHat.png",
     comments: [{
-        index : 0,
-        author : "mo",
+        userName : "mo",
         profileImg : "sponge.png",
         timeStamp: "121534"
     },
     {
-        index: 1,
-        author: "christy",
+        userName: "christy",
         profileImg: "patrick.png",
         timeStamp: "546789"
     }],
