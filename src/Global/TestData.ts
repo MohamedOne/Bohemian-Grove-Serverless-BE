@@ -7,7 +7,18 @@ export const testPost1 = {
     displayImg: "captain.png",
     postBody: "I am the captain now",
     postImg: "captainHat.png",
-    comments: ["this post sucks", "        "],
+    comments: [{
+        index : 0,
+        author : "mo",
+        profileImg : "sponge.png",
+        timeStamp: "121534"
+    },
+    {
+        index: 1,
+        author: "christy",
+        profileImg: "patrick.png",
+        timeStamp: "546789"
+    }],
     likes: ["sam", "jared", "kai", "mo"]
 
 }
@@ -55,7 +66,7 @@ export const testPost4 = {
 
 export const testUser1 = {
 
-    dataKey: "sir",
+    dataKey: "theSponge",
     dataType: "user",
     displayName: "captain",
     email: "asdas@gmail.com",

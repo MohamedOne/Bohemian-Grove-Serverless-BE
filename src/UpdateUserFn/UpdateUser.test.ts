@@ -42,18 +42,27 @@ test('it should update the user in the databse', async () => {
     expect(checker).toEqual(result);
 })
 
-test('if body is null it should return a 400 status code saying body was null', async () => {
-
+test('it should be unable to update user', async() => {
 
     const mockEvent = lambdaEventMock.apiGateway()
         .path(`/user/${testUser1.dataKey}`)
-        .method('POST')
-        .header('test get post')
-        .body(null);
+        .method('PUT')
+        .header('test update user')
+
+
 
     const result = await handler(mockEvent._event);
 
-    expect(result.statusCode).toEqual(400);
-    expect(result.body).toBe('["body was null"]')
+    const params = {
+        TableName: process.env.DDB_TABLE_NAME,
+        Key: {
+            dataType: "user",
+            dataKey: 'admin'
+        }
+    }
 
+    const check = await ddbDocClient.send(new GetCommand(params));
+    const checker = new HTTPResponse(200, check.Item)
+
+    expect(result.statusCode).toEqual(400);
 })

@@ -1,9 +1,10 @@
 
 import { ddbDocClient } from '../Global/DynamoDB'
-import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { testPost1, testPost2, testPost3, testPost4 } from '../Global/TestData'
+import { PutCommand, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
+import { testPost1, testPost2, testPost3 } from '../Global/TestData'
 import { handler } from './GetGlobalFeed'
 import { HTTPResponse } from '../Global/DTO';
+import lambdaEventMock from 'lambda-event-mock';
 
 afterAll(() => {
   ddbDocClient.destroy();
@@ -27,19 +28,40 @@ test('it should get all posts for the global feed', async () => {
   await ddbDocClient.send(new PutCommand(putParams2));
   await ddbDocClient.send(new PutCommand(putParams3));
 
-  const result = await handler();
+  const mockEvent = lambdaEventMock.apiGateway()
+  .path(`/post`)
+  .method('GET')
+  .header('test get all posts')
+  
 
-  const params = {
+  const result = await handler(mockEvent._event);
+
+
+  const params: QueryCommandInput = {
     TableName: process.env.DDB_TABLE_NAME,
-    KeyConditionExpression: 'dataType = :p',
     ExpressionAttributeValues: {
       ":p": "post"
     },
+    KeyConditionExpression: "dataType = :p"
   }
 
-  const check = await ddbDocClient.send(new QueryCommand(params));
-  const checker = new HTTPResponse(200, check.Items)
+
+  const check = ddbDocClient.send(new QueryCommand(params));
+  const checker = new HTTPResponse(200, check)
+
+  expect(result.statusCode).toEqual(checker.statusCode);
+})
+
+test('it should be unable to grab feed', async() => {
+
+  const mockEvent = lambdaEventMock.apiGateway()
+  .path(`/post`)
+  .method('GET')
+  .header('test get all posts')
+  
+  const result = await handler(mockEvent);
 
 
-  expect(JSON.parse(checker.body)).toEqual(JSON.parse(result.body));
+  expect(result.statusCode).toEqual(400);
+
 })
