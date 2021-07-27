@@ -41,3 +41,28 @@ test('it should update the user in the databse', async () => {
 
     expect(checker).toEqual(result);
 })
+
+test('it should be unable to update user', async() => {
+
+    const mockEvent = lambdaEventMock.apiGateway()
+        .path(`/user/${testUser1.dataKey}`)
+        .method('PUT')
+        .header('test update user')
+
+
+
+    const result = await handler(mockEvent._event);
+
+    const params = {
+        TableName: process.env.DDB_TABLE_NAME,
+        Key: {
+            dataType: "user",
+            dataKey: 'admin'
+        }
+    }
+
+    const check = await ddbDocClient.send(new GetCommand(params));
+    const checker = new HTTPResponse(200, check.Item)
+
+    expect(result.statusCode).toEqual(400);
+})

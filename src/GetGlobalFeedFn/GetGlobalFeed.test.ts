@@ -52,3 +52,16 @@ test('it should get all posts for the global feed', async () => {
   expect(result.statusCode).toEqual(checker.statusCode);
 })
 
+test('it should be unable to grab feed', async() => {
+
+  const mockEvent = lambdaEventMock.apiGateway()
+  .path(`/post`)
+  .method('GET')
+  .header('test get all posts')
+  
+  const result = await handler(mockEvent);
+
+
+  expect(result.statusCode).toEqual(400);
+
+})

@@ -7,7 +7,6 @@ import Post from "../Global/Post";
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
     if (event.pathParameters && event.body) {
-        console.log(event.pathParameters);
         //Take timestamp key from path parameters
         console.log("Received timeStamp: " + event.pathParameters.timeStamp);
         let timeStamp = event.pathParameters.timeStamp;
