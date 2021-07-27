@@ -11,18 +11,6 @@ afterAll(() => {
 
 test('it should delete post', async() => {
 
-//     const params: DeleteCommandInput = {
-//         TableName: process.env.DDB_TABLE_NAME,
-
-//         Key: {
-//             dataType: "post",
-//             dataKey: testPost1.dataKey
-//         }
-//     }
-
-//    await ddbDocClient.send(new DeleteCommand(params));
-
-
     const mockEvent = lambdaEventMock.apiGateway()
     .path(`/post/${testPost1.dataKey}`)
     .method('DELETE')

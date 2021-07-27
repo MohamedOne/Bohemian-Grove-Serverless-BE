@@ -5,15 +5,13 @@ import { HTTPResponse } from '../Global/DTO';
 import lambdaEventMock from 'lambda-event-mock'
 import Post from '../Global/Post';
 import { testPost1 } from '../Global/TestData'
+import Comment from 'src/Global/Comment';
 
 
 afterAll(() => {
     ddbDocClient.destroy();
   });
   
-
-import Comment from 'src/Global/Comment';
-
 test('it should create add a comment', async() => {
 
     let comment: Comment = {

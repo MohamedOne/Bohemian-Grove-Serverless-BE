@@ -4,7 +4,7 @@ import { APIGatewayProxyEvent } from "aws-lambda"
 import {GetCommand, GetCommandInput} from "@aws-sdk/lib-dynamodb";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
-    
+
     //Grab our data key from path paramaters
     if (event.pathParameters) {
         console.log("Received userName: " + event.pathParameters.userName);
@@ -23,6 +23,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             //Return requested user
             return new HTTPResponse(200, data.Item);
         } catch (err) {
+            console.log(err);
             return new HTTPResponse(400, "Unable to get user");  
       }
     }   
