@@ -6,27 +6,21 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
-    if(event) {
+    if (event) {
 
         const params: ScanCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             ExpressionAttributeValues: {
-                ":type" : "post"
+                ":type": "post"
             },
             FilterExpression: "dataType = :type"
-    
+
         }
-        let feed: Post[] = [];
-        try {
-            const data = await ddbDocClient.send(new ScanCommand(params));
-            feed = data.Items as Post[];
-            return new HTTPResponse(200, feed, console.log(feed));
-        } catch (err) {
-            throw (err);
-        }
+        const data = await ddbDocClient.send(new ScanCommand(params));
+        const feed = data.Items;
+        return new HTTPResponse(200, feed);
 
     }
-    return new HTTPResponse(400, "Unable to grab feed");
+    return new HTTPResponse(400, "Unable to grab feed")
 
-    
 }

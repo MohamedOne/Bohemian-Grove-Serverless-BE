@@ -31,11 +31,27 @@ test('it should get all posts from user provided', async () => {
     const mockEvent = lambdaEventMock.apiGateway()
         .path(`/post/`)
         .method('GET')
-        .header('test get post')
-        .body(testPost1.userName);
+        .header('test get user feed')
+
+
+    mockEvent._event.pathParameters = { userName: testPost3.userName };
 
     const result = await handler(mockEvent._event);
+    const checker = new HTTPResponse(200, [testPost3])
+
+    expect(result).toEqual(checker);
+})
+
+test('it should error because path params was null', async () => {
 
 
-    expect(result.body).toEqual(test.dataKey);
+    const mockEvent = lambdaEventMock.apiGateway()
+        .path(`/post/`)
+        .method('GET')
+        .header('test get user feed')
+
+    const result = await handler(mockEvent._event);
+    const checker = new HTTPResponse(400, "path params was null");
+
+    expect(result).toEqual(checker);
 })

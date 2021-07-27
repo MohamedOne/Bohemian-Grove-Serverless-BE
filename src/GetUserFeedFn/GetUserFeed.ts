@@ -9,16 +9,18 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
     // Your code here
 
-    if (event.body != null) {
+    if (event.pathParameters != null) {
+
 
         const params: QueryCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
 
-            KeyConditionExpression: 'dataType = :p AND dataKey = :k',
+            KeyConditionExpression: 'dataType = :p',
             ExpressionAttributeValues: {
                 ":p": "post",
-                ":k": String(event.body)
-            }
+                ":s": event.pathParameters.userName
+            },
+            FilterExpression: "contains(userName, :s)"
 
 
         }
@@ -26,5 +28,5 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         const feed = data.Items;
         return new HTTPResponse(200, feed);
     }
-    return new HTTPResponse(400, "body was null");
+    return new HTTPResponse(400, "path params was null");
 }
