@@ -51,3 +51,15 @@ test('it should get user', async () => {
 
   expect(result.statusCode).toEqual(checker.statusCode);
 })
+
+test('it should not get a user', async() => {
+
+    const mockEvent = lambdaEventMock.apiGateway()
+  .path(`/user/${testUser1.dataKey}`)
+  .method('GET')
+  .header('test get user')
+
+  const result = await handler(mockEvent._event);
+
+  expect(result.statusCode).toEqual(400);
+})

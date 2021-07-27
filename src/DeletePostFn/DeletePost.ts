@@ -24,7 +24,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             await ddbDocClient.send(new DeleteCommand(params));
             return new HTTPResponse(200, "Post deleted successfully!");
         } catch (err) {
-            return new HTTPResponse(400, "Unable to delete post");  
+            console.log(err);
     }
     }   
 

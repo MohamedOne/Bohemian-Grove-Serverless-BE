@@ -56,3 +56,17 @@ test('it should delete requested user', async() => {
   expect(result.statusCode).toEqual(checker.statusCode);
 
 })
+
+test('it should not be able to delete a user', async() => {
+
+    const mockEvent = lambdaEventMock.apiGateway()
+    .path(`/user/${testUser1.dataKey}`)
+    .method('DELETE')
+    .header('test if we are deleting user')
+  
+      console.log(mockEvent._event)
+    const result = await handler(mockEvent._event);
+  
+      expect(result.statusCode).toEqual(400);
+
+})

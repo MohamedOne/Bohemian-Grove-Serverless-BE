@@ -43,3 +43,38 @@ const checker = new HTTPResponse(200, check.Item);
 expect(result.statusCode).toEqual(checker.statusCode);
 
 })
+
+test('it should return: Unable to update image', async() => {
+
+    const mockEvent = lambdaEventMock.apiGateway()
+    .path(`/user/${testUser1.dataKey}`)
+    .method('PUT')
+    .header('test if we are updating the image')
+
+    const result = await handler(mockEvent._event);
+
+    expect(result.statusCode).toEqual(400);
+
+})
+
+test('it should return: Unable to update image', async() => {
+
+    const sendData = {
+        postBody : "Ima changin this post"
+    }
+
+    const mockEvent = lambdaEventMock.apiGateway()
+    .path(`/user/${7432}`)
+    .method('PUT')
+    .header('test if we are updating the image')
+    .body(sendData)
+
+    mockEvent._event.pathParameters = {
+        userName : 7432
+    }
+
+    const result = await handler(mockEvent._event);
+
+    expect(result.statusCode).toEqual(400);
+
+})

@@ -43,8 +43,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 console.log(err)
                 return new HTTPResponse(400, "Unable to add post");
             }
-        } else {
-        return new HTTPResponse(400, "Unable to add post");
+        
         } 
 
     } else {

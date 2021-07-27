@@ -46,3 +46,17 @@ test('it should delete post', async() => {
   expect(result.statusCode).toEqual(checker.statusCode);
 
 })
+
+test('it should be unable to delete a post', async() => {
+
+    const mockEvent = lambdaEventMock.apiGateway()
+    .path(`/post/${testPost1.dataKey}`)
+    .method('DELETE')
+    .header('test if we are deleting post')
+
+ 
+
+  const result = await handler(mockEvent._event);
+
+  expect(result.statusCode).toEqual(400);
+})

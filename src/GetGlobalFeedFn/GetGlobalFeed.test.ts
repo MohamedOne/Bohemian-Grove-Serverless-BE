@@ -28,24 +28,27 @@ test('it should get all posts for the global feed', async () => {
   await ddbDocClient.send(new PutCommand(putParams2));
   await ddbDocClient.send(new PutCommand(putParams3));
 
+  const mockEvent = lambdaEventMock.apiGateway()
+  .path(`/post`)
+  .method('GET')
+  .header('test get all posts')
   
 
-  const result = await handler();
+  const result = await handler(mockEvent._event);
 
 
   const params: QueryCommandInput = {
     TableName: process.env.DDB_TABLE_NAME,
-    ExpressionAttributeNames: {
-      "#p": "post"
+    ExpressionAttributeValues: {
+      ":p": "post"
     },
-    KeyConditionExpression: "dataType = #p"
+    KeyConditionExpression: "dataType = :p"
   }
 
-  const firstPassQuery = ddbDocClient.send(new QueryCommand(params));
-  const firstCheck = new HTTPResponse(200, firstPassQuery);
 
-  const check =  ddbDocClient.send(new QueryCommand(params));
+  const check = ddbDocClient.send(new QueryCommand(params));
   const checker = new HTTPResponse(200, check)
 
-  expect(checker).toEqual(firstCheck);
+  expect(result.statusCode).toEqual(checker.statusCode);
 })
+
