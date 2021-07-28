@@ -9,37 +9,47 @@ afterAll(() => {
     ddbDocClient.destroy();
   });
   
-  test('it should delete comment', async() => {
-
-    const sendData = {
-        comment: "this post sucks"
+  test('it should delete a comment', async () => {
+    const putParams1 = {
+      TableName: process.env.DDB_TABLE_NAME,
+      Item: testPost1
     }
+    
+    await ddbDocClient.send(new PutCommand(putParams1));
 
     const mockEvent = lambdaEventMock.apiGateway()
-    .path(`/post/${testPost1.dataKey}`)
-    .method('PUT')
-    .header('test if we are deleting a comment')
-    .body(sendData)
-
+    .path(`/post`)
+    .method('DELETE')
+    .header('delete a comment')
+    
     mockEvent._event.pathParameters = {
-        timeStamp: testPost1.dataKey
+        timeStamp : testPost1.dataKey,
+        commentStamp : testPost1.comments[0].commentStamp,
     }
 
+  
     const result = await handler(mockEvent._event);
+  
+  
+    expect(result.statusCode).toEqual(200);
+  
+  })
 
-        //Grab comment array
-        const queryParams: GetCommandInput = {
-            TableName: process.env.DDB_TABLE_NAME,
-            Key: {
-                dataType: "post",
-                dataKey: testPost1.dataKey,
-            },
-            ProjectionExpression: "comments"
-        }
+  test('it should be unable to delete a comment', async() => {
 
-    const check = await ddbDocClient.send(new GetCommand(queryParams));
-    const checker = new HTTPResponse(200, check.Item);
+    const putParams1 = {
+        TableName: process.env.DDB_TABLE_NAME,
+        Item: testPost1
+      }
+      
+      await ddbDocClient.send(new PutCommand(putParams1));
+  
+      const mockEvent = lambdaEventMock.apiGateway()
+      .path(`/post`)
+      .method('DELETE')
+      .header('delete a comment')
 
-    expect(result.statusCode).toEqual(checker.statusCode);
-
+      const result = await handler(mockEvent._event);    
+    
+      expect(result.statusCode).toEqual(400);
   })

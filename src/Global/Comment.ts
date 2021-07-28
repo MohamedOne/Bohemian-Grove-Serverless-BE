@@ -1,21 +1,21 @@
 interface IComment {
-    body: string,
-    timeStamp: string,
-    userName: string
+    author: string,
+    displayImg: string,
+    comment: string
 }
 
 export class Comment implements IComment {
 
-    public userName: string;
-    public body: string;
-    public timeStamp: number;
+    public displayImg: string;
+    public author: string;
+    public comment: string;
 
 
 
-    constructor(post: any,) {
-        this.userName = post.userName;
-        this.timeStamp = post.postTime;
-        this.body = post.postBody;
+    constructor(comment: any,) {
+        this.displayImg = comment.userName;
+        this.comment = comment.comment;
+        this.author = comment.author;
     }
 }
 

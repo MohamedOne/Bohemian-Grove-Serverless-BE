@@ -10,12 +10,14 @@ export const testPost1 = {
     comments: [{
         userName : "mo",
         profileImg : "sponge.png",
-        timeStamp: "121534"
+        comment: "i love commenting",
+        commentStamp: "121534"
     },
     {
         userName: "christy",
         profileImg: "patrick.png",
-        timeStamp: "546789"
+        comment: "and by love i mean hate",
+        commentStamp: "546789"
     }],
     likes: ["sam", "jared", "kai", "mo"]
 
