@@ -56,7 +56,8 @@ export const testUser1 = {
     displayName: "captain",
     email: "asdas@gmail.com",
     password: "ASDASD",
-    profileImg: "img"
+    profileImg: "img",
+    following: ["sam", "mo", "kai", "jared"]
 
 }
 export const testUser2 = {
