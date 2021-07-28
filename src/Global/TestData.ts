@@ -70,7 +70,9 @@ export const testUser1 = {
     dataType: "user",
     displayName: "captain",
     email: "asdas@gmail.com",
-    profileImg: "img"
+    password: "ASDASD",
+    profileImg: "img",
+    following: ["sam", "mo", "kai", "jared"]
 
 }
 export const testUser2 = {
