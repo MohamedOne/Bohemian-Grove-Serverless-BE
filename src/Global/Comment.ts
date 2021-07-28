@@ -1,5 +1,5 @@
 interface IComment {
-    author: string,
+    displayName: string,
     displayImg: string,
     comment: string
 }
@@ -7,15 +7,15 @@ interface IComment {
 export class Comment implements IComment {
 
     public displayImg: string;
-    public author: string;
+    public displayName: string;
     public comment: string;
 
 
 
-    constructor(comment: any,) {
-        this.displayImg = comment.userName;
+    constructor(comment: any) {
+        this.displayImg = comment.displayImg;
         this.comment = comment.comment;
-        this.author = comment.author;
+        this.displayName = comment.displayName;
     }
 }
 

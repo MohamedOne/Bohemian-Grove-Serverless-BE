@@ -35,7 +35,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             //Next --> iterate over array to find target comment
             let index = 0;
             for(let i = 0; i < commentsArray.length; i++) {
-                if(commentsArray[i].commentStamp === commentStamp)
+                if(commentsArray[i].commentStamp == commentStamp)
                     index = i;
             }
             console.log(index);
