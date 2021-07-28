@@ -461,14 +461,24 @@ Resources:
         Command:
           - /bg/TestS3Fn/TestS3.handler
       Description: A lambda to be used as a test for S3 buckets.
+  #Singular image lambda
+  AddUserImgFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      Functionname: BG-AddUserImg
+      PackageType: Image
+      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      ImageConfig:
+        Command:
+          -/bg/AddUserImgFn/AddUserImg.handler
+      Description: Update user image
       Events:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /test
-            Method: post
-      Policies: AmazonS3FullAccess
-    Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: ./
-      DockerTag: Latest
+            Path: /user/{userName}
+            Method: put
+            RequestParameters:
+              -method.request.path.userName
+
+  
