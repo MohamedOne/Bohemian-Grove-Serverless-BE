@@ -8,13 +8,13 @@ export const testPost1 = {
     postBody: "I am the captain now",
     postImg: "captainHat.png",
     comments: [{
-        userName : "mo",
+        displayName : "mo",
         profileImg : "sponge.png",
         comment: "i love commenting",
         commentStamp: "121534"
     },
     {
-        userName: "christy",
+        displayName: "christy",
         profileImg: "patrick.png",
         comment: "and by love i mean hate",
         commentStamp: "546789"
@@ -70,7 +70,9 @@ export const testUser1 = {
     dataType: "user",
     displayName: "captain",
     email: "asdas@gmail.com",
-    profileImg: "img"
+    password: "ASDASD",
+    profileImg: "img",
+    following: ["sam", "mo", "kai", "jared"]
 
 }
 export const testUser2 = {

@@ -289,7 +289,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{postId}
+            Path: /post/{timeStamp}
             Method: post
             RequestParameters:
               - method.request.path.postId
@@ -311,7 +311,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{postId}
+            Path: /post/{timeStamp}
             Method: get
             RequestParameters:
               - method.request.path.postId
@@ -376,7 +376,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{postId}
+            Path: /post/{timeStamp}
             Method: put
             RequestParameters:
               - method.request.path.postId
@@ -420,7 +420,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{postId}
+            Path: /post/{timeStamp}
             Method: delete
             RequestParameters:
               - method.request.path.postId
@@ -443,7 +443,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{postId}/{commentId}
+            Path: /post/{timeStamp}/{commentStamp}
             Method: delete
             RequestParameters:
               - method.request.path.postId
