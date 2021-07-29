@@ -130,6 +130,8 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
+            Auth: 
+              Authorizer: NONE
             Path: /user/{userName}
             Method: post
             RequestParameters:
@@ -452,33 +454,82 @@ Resources:
       DockerTag: Latest
 
   # Test lambdas
-  TestS3Fn:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: BG-Test
-      PackageType: Image
-      ImageConfig:
-        Command:
-          - /bg/TestS3Fn/TestS3.handler
-      Description: A lambda to be used as a test for S3 buckets.
-  #Singular image lambda
+  # TestS3Fn:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     FunctionName: BG-Test
+  #     PackageType: Image
+  #     ImageConfig:
+  #       Command:
+  #         - /bg/TestS3Fn/TestS3.handler
+  #     Description: A lambda to be used as a test for S3 buckets.
+  
+  # Singular image lambda
   AddUserImgFn:
     Type: AWS::Serverless::Function
     Properties:
-      Functionname: BG-AddUserImg
+      FunctionName: BG-AddUserImg
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
-          -/bg/AddUserImgFn/AddUserImg.handler
+          - /bg/AddUserImgFn/AddUserImg.handler
       Description: Update user image
       Events:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /user/{userName}
+            Path: /user/{userName}/image
             Method: put
             RequestParameters:
-              -method.request.path.userName
+              - method.request.path.userName
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
+
+  # Authentication lambdas
+  SignInFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-SignIn
+      PackageType: Image
+      ImageConfig:
+        Command:
+          - /bg/SignInFn/SignIn.handler
+      Description: Returns authentication information from cognito
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Auth: 
+              Authorizer: NONE
+            Path: /auth/signin
+            Method: post
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
+
+  SignUpFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-SignUp
+      PackageType: Image
+      ImageConfig:
+        Command:
+          - /bg/SignUpFn/SignUp.handler
+      Description: Creates a new user in cognito
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Auth: 
+              Authorizer: NONE
+            Path: /auth/signup
+            Method: post
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   
