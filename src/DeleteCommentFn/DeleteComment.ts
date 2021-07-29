@@ -48,11 +48,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                     dataKey: timeStamp
                 },
                 UpdateExpression: `REMOVE comments[${index}]`,
-                ReturnValues: "ALL_OLD"
+                ReturnValues: "ALL_NEW"
             }
             const removeQuery = await ddbDocClient.send(new UpdateCommand(removeCommentParams));
        
-
+            //Return new comment array sin deleted comment
             return new HTTPResponse(200, removeQuery.Attributes);
     }
     return new HTTPResponse(400, "Unable to delete comment");

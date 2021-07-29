@@ -57,10 +57,10 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                     dataKey: username
                 },
                 UpdateExpression: `REMOVE following[${index}]`,
-                ReturnValues: "ALL_OLD"
+                ReturnValues: "ALL_NEW"
             }
             const removeQuery = await ddbDocClient.send(new UpdateCommand(removeCommentParams));                
-
+            console.log(removeQuery.Attributes)
             //Else follower is not in the list --> add him/her
         } else {
 

@@ -5,7 +5,6 @@ import Post from "../Global/Post";
 import { HTTPResponse } from "../Global/DTO";
 
 
-
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
     if (event.pathParameters) {
