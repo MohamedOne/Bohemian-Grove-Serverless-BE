@@ -6,7 +6,7 @@ import { SignUpCommand, SignUpCommandInput } from "@aws-sdk/client-cognito-ident
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
     const data = JSON.parse(event.body || '{}');
 
-    if (!data.userName || !data.password || !data.email) return new HTTPResponse(400, {message: "Invalid input"});
+    if (!data.userName || !data.password || !data.email) return new HTTPResponse(400, {message: "Invalid input", data});
 
     const cognitoParams: SignUpCommandInput = {
         ClientId: process.env.COG_CLIENT_APPID,

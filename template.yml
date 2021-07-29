@@ -144,7 +144,7 @@ Resources:
             Method: post
             RequestParameters:
               - method.request.path.userName
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -167,6 +167,7 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -189,7 +190,7 @@ Resources:
             Method: put
             RequestParameters:
               - method.request.path.userName
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -212,7 +213,7 @@ Resources:
             Method: delete
             RequestParameters:
               - method.request.path.userName
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -235,6 +236,7 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.searchTerm
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -257,6 +259,7 @@ Resources:
             Method: post
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -278,7 +281,7 @@ Resources:
           Properties:
             Path: /post
             Method: post
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -301,6 +304,7 @@ Resources:
             Method: post
             RequestParameters:
               - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -323,6 +327,7 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -343,6 +348,7 @@ Resources:
           Properties:
             Path: /post
             Method: get
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -366,6 +372,7 @@ Resources:
             RequestParameters:
               - method.request.path.userName
               - method.request.querystring.following
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -388,6 +395,7 @@ Resources:
             Method: put
             RequestParameters:
               - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -410,6 +418,7 @@ Resources:
             Method: patch
             RequestParameters:
               - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -432,7 +441,7 @@ Resources:
             Method: delete
             RequestParameters:
               - method.request.path.timeStamp
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -456,6 +465,7 @@ Resources:
             RequestParameters:
               - method.request.path.timeStamp
               - method.request.path.commentId
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -490,6 +500,7 @@ Resources:
             Method: put
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
