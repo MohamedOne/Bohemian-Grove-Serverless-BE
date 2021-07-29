@@ -272,7 +272,7 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command:
-          - /bg/FollowUnfollowFn/GetUserPost.handler
+          - /bg/GetUserPostFn/GetUserPost.handler
       Description: Grabs array of user specific posts. 
       Events:
         ApiEvent:
@@ -282,6 +282,7 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
