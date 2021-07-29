@@ -103,6 +103,14 @@ Resources:
       CallbackURLs:
         - https://eaxmple.com/callback
 
+  # Cognito user pool domain
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: bohemian-grove
+      UserPoolId: 
+        Ref: CognitoUserPool
+
   # S3 buckets
   UserImageStorage:
     Type: AWS::S3::Bucket
@@ -292,7 +300,7 @@ Resources:
             Path: /post/{timeStamp}
             Method: post
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -314,7 +322,7 @@ Resources:
             Path: /post/{timeStamp}
             Method: get
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -379,7 +387,7 @@ Resources:
             Path: /post/{timeStamp}
             Method: put
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -398,10 +406,10 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{postId}
+            Path: /post/{timeStamp}
             Method: patch
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -423,7 +431,7 @@ Resources:
             Path: /post/{timeStamp}
             Method: delete
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
       Policies: AmazonS3FullAccess
     Metadata:
       Dockerfile: Dockerfile
@@ -446,7 +454,7 @@ Resources:
             Path: /post/{timeStamp}/{commentStamp}
             Method: delete
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
               - method.request.path.commentId
     Metadata:
       Dockerfile: Dockerfile
