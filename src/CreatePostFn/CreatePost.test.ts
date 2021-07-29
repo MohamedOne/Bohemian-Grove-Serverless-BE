@@ -13,21 +13,23 @@ afterAll(() => {
 
 test('it should create a new post', async() => {
 
+    let temp = Date.now();
+    let timeStamp = temp.toString();
+
     const tempPost: Post = {
         userName : "bigGulp",
-        timeStamp: "Dec152016",
+        dataKey: timeStamp,
         displayName: "homeSlice",
         displayImg: "captainHat.png",
         postBody: "Doing this on my phone",
         likes: ["tom", "jerry", "berry"],
         comments: ["hi", "iam", "writing my first comment"],
-        postImg: "anotherImg.png"
 
     }
 
 
     const mockEvent = lambdaEventMock.apiGateway()
-    .path(`/post/${tempPost.timeStamp}`)
+    .path(`/post/${tempPost.dataKey}`)
     .method('POST')
     .header('test if we are creating post')
     .body(tempPost)
@@ -70,21 +72,22 @@ test('it should not create a new post', async() => {
 
 test('it should not create a new post', async() => {
 
+    let temp = Date.now();
+    let timeStamp = temp.toString();
+
     const tempPost: Post = {
         userName : "bigGulp",
-        timeStamp: "Dec152016",
+        dataKey : timeStamp,
         displayName: "homeSlice",
         displayImg: "captainHat.png",
         postBody: "Doing this on my phone",
         likes: ["tom", "jerry", "berry"],
         comments: ["hi", "iam", "writing my first comment"],
-        postImg: "anotherImg.png"
-
     }
 
 
     const mockEvent = lambdaEventMock.apiGateway()
-    .path(`/post/${tempPost.timeStamp}`)
+    .path(`/post/${tempPost.dataKey}`)
     .method('POST')
     .header('test if we are creating post')
     .body(tempPost)
@@ -98,5 +101,5 @@ test('it should not create a new post', async() => {
     const result = await handler(mockEvent._event);
     
 
-    expect(result).toBeUndefined();
+    expect(result.statusCode).toEqual(400);
 })

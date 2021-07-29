@@ -17,7 +17,6 @@ export class Post implements IPost {
     public likes: string[];
     public dataKey: string;
     public comments: string[];
-    public postImg: string;
 
 
     constructor(post: any) {
@@ -26,7 +25,6 @@ export class Post implements IPost {
         this.displayName = post.displayName;
         this.displayImg = post.displayImg;
         this.postBody = post.postBody;
-        this.postImg = post.postImg;
         this.comments = post.comments;
         this.likes = post.likes;
     }

@@ -16,13 +16,14 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             Key: {
                 dataType: "post",
                 dataKey: timeStamp
-            }
+            },
+            ReturnValues: "ALL_OLD"
         }
 
         try {
             //Delete requested user
-            await ddbDocClient.send(new DeleteCommand(params));
-            return new HTTPResponse(200, "Post deleted successfully!");
+            const result = await ddbDocClient.send(new DeleteCommand(params));
+            return new HTTPResponse(200, result.Attributes);
         } catch (err) {
             console.log(err);
     }

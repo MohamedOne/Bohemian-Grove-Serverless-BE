@@ -13,23 +13,24 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         const post: any = JSON.parse(body);
         const newPost: Post = new Post(post);
 
+        let temp = Date.now();
+        let timeStamp = temp.toString();
+
         //Check username in incoming post body against username in { event.requestContext.authorizer.claims.username }
-        if(newPost.userName === event.requestContext.authorizer.claims.username) {
+        
             //Proceed with adding new post 
             const params: PutCommandInput = {
                 TableName: process.env.DDB_Table_Name, 
 
                 Item: {
-                    dataKey: `${newPost.timeStamp}`,
+                    dataKey: timeStamp,
                     dataType : "post",
                     displayName: `${newPost.displayName}`,
                     userName: `${newPost.userName}`,
                     displayImg: `${newPost.displayImg}`,
                     postBody: `${newPost.postBody}`,
                     likes: `${newPost.likes}`,
-                    timeStamp: `${newPost.timeStamp}`,
                     comments: `${newPost.comments}`,
-                    postImg: `${newPost.postImg}`,
                 },
                 ReturnValues: "ALL_OLD"
             }
@@ -39,7 +40,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 return new HTTPResponse(200, "Post added successfully", data.Attributes);
             
         
-        } 
+        
 
     } 
         return new HTTPResponse(400, "Unable to add post", "most outer if-else");

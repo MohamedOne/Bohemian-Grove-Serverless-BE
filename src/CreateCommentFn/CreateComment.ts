@@ -45,7 +45,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 ":newComment": tempArray,
             },
             UpdateExpression: 
-                "SET comments = list_append(comments, :newComment)"
+                "SET comments = list_append(comments, :newComment)",
+            ReturnValues: "ALL_NEW"
         }
 
  
