@@ -252,6 +252,28 @@ Resources:
       DockerContext: ./
       DockerTag: Latest
 
+  GetUserPostFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-GetUserPost
+      PackageType: Image
+      ImageConfig:
+        Command:
+          - /bg/FollowUnfollowFn/GetUserPost.handler
+      Description: Grabs array of user specific posts. 
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /post/{userName}/specific
+            Method: get
+            RequestParameters:
+              - method.request.path.userName
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
+
   # Post lambdas
   CreatePostFn:
     Type: AWS::Serverless::Function

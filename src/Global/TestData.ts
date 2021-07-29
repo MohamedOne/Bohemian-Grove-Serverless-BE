@@ -31,7 +31,18 @@ export const testPost2 = {
     displayImg: "captain.png",
     postBody: "I am the captain now",
     postImg: "captainHat.png",
-    comments: ["this post sucks", "        "],
+    comments: [{
+        displayName : "mo",
+        profileImg : "sponge.png",
+        comment: "i love commenting",
+        commentStamp: "121534"
+    },
+    {
+        displayName: "christy",
+        profileImg: "patrick.png",
+        comment: "and by love i mean hate",
+        commentStamp: "546789"
+    }],
     likes: ["sam", "jared", "mo"]
 
 }
