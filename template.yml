@@ -278,7 +278,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/user/{userName}
+            Path: /post/user/2/{userName}
             Method: get
             RequestParameters:
               - method.request.path.userName
