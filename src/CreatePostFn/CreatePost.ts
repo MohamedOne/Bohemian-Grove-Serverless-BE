@@ -31,7 +31,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 userName: `${newPost.userName}`,
                 displayImg: `${newPost.displayImg}`,
                 postBody: `${newPost.postBody}`,
-                likes: likes,
                 comments: []
             }
         }
