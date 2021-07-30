@@ -13,7 +13,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             TableName: process.env.DDB_TABLE_NAME,
             Key: {
                 dataType: "post",
-                dataKey: event.pathParameters.postId
+                dataKey: event.pathParameters.timeStamp
             }
         }
         const res = await ddbDocClient.send(new GetCommand(params));

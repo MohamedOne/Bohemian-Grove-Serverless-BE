@@ -23,7 +23,7 @@ const dynamoConf = {
     ...testConf
 }
 
-const ddbClient = new DynamoDBClient(dynamoConf);
+export const ddbClient = new DynamoDBClient(dynamoConf);
 
 const marshallOptions = {
     // Whether to automatically convert empty strings, blobs, and sets to `null`.
