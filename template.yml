@@ -431,7 +431,7 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command:
-          - /bg/LikeUnlikePostFn.handler
+          - /bg/LikeUnlikePostFn/LikeUnlikePost.handler
       Description: Toggles the 'like' status on a post for a user.
       Events:
         ApiEvent:
