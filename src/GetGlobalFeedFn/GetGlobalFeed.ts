@@ -8,15 +8,16 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
     if (event) {
 
-        const params: ScanCommandInput = {
+        const params: QueryCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             ExpressionAttributeValues: {
                 ":type": "post"
             },
-            FilterExpression: "dataType = :type"
+            KeyConditionExpression: "dataType = :type",
+            ScanIndexForward: false
 
         }
-        const data = await ddbDocClient.send(new ScanCommand(params));
+        const data = await ddbDocClient.send(new QueryCommand(params));
         const feed = data.Items;
         return new HTTPResponse(200, feed);
 

@@ -103,6 +103,14 @@ Resources:
       CallbackURLs:
         - https://eaxmple.com/callback
 
+  # Cognito user pool domain
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: bohemian-grove
+      UserPoolId: 
+        Ref: CognitoUserPool
+
   # S3 buckets
   UserImageStorage:
     Type: AWS::S3::Bucket
@@ -130,11 +138,13 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
+            Auth: 
+              Authorizer: NONE
             Path: /user/{userName}
             Method: post
             RequestParameters:
               - method.request.path.userName
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -157,6 +167,7 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -179,7 +190,7 @@ Resources:
             Method: put
             RequestParameters:
               - method.request.path.userName
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -202,7 +213,7 @@ Resources:
             Method: delete
             RequestParameters:
               - method.request.path.userName
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -225,6 +236,7 @@ Resources:
             Method: get
             RequestParameters:
               - method.request.path.searchTerm
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -247,6 +259,7 @@ Resources:
             Method: post
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -259,16 +272,17 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command:
-          - /bg/FollowUnfollowFn/GetUserPost.handler
+          - /bg/GetUserPostFn/GetUserPost.handler
       Description: Grabs array of user specific posts. 
       Events:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{userName}/specific
+            Path: /post/user/2/{userName}
             Method: get
             RequestParameters:
               - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -290,7 +304,7 @@ Resources:
           Properties:
             Path: /post
             Method: post
-      Policies: AmazonS3FullAccess
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -312,7 +326,8 @@ Resources:
             Path: /post/{timeStamp}
             Method: post
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -334,7 +349,8 @@ Resources:
             Path: /post/{timeStamp}
             Method: get
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -355,6 +371,7 @@ Resources:
           Properties:
             Path: /post
             Method: get
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -378,6 +395,7 @@ Resources:
             RequestParameters:
               - method.request.path.userName
               - method.request.querystring.following
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -399,7 +417,8 @@ Resources:
             Path: /post/{timeStamp}
             Method: put
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -412,16 +431,17 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command:
-          - /bg/LikeUnlikePostFn.handler
+          - /bg/LikeUnlikePostFn/LikeUnlikePost.handler
       Description: Toggles the 'like' status on a post for a user.
       Events:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /post/{postId}
+            Path: /post/{timeStamp}
             Method: patch
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -443,8 +463,8 @@ Resources:
             Path: /post/{timeStamp}
             Method: delete
             RequestParameters:
-              - method.request.path.postId
-      Policies: AmazonS3FullAccess
+              - method.request.path.timeStamp
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
@@ -466,41 +486,92 @@ Resources:
             Path: /post/{timeStamp}/{commentStamp}
             Method: delete
             RequestParameters:
-              - method.request.path.postId
+              - method.request.path.timeStamp
               - method.request.path.commentId
+      Policies: AmazonDynamoDBFullAccess
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./
       DockerTag: Latest
 
   # Test lambdas
-  TestS3Fn:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: BG-Test
-      PackageType: Image
-      ImageConfig:
-        Command:
-          - /bg/TestS3Fn/TestS3.handler
-      Description: A lambda to be used as a test for S3 buckets.
-  #Singular image lambda
+  # TestS3Fn:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     FunctionName: BG-Test
+  #     PackageType: Image
+  #     ImageConfig:
+  #       Command:
+  #         - /bg/TestS3Fn/TestS3.handler
+  #     Description: A lambda to be used as a test for S3 buckets.
+  
+  # Singular image lambda
   AddUserImgFn:
     Type: AWS::Serverless::Function
     Properties:
-      Functionname: BG-AddUserImg
+      FunctionName: BG-AddUserImg
       PackageType: Image
-      ImageUri: 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
       ImageConfig:
         Command:
-          -/bg/AddUserImgFn/AddUserImg.handler
+          - /bg/AddUserImgFn/AddUserImg.handler
       Description: Update user image
       Events:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /user/{userName}
+            Path: /user/{userName}/image
             Method: put
             RequestParameters:
-              -method.request.path.userName
+              - method.request.path.userName
+      Policies: AmazonDynamoDBFullAccess
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
+
+  # Authentication lambdas
+  SignInFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-SignIn
+      PackageType: Image
+      ImageConfig:
+        Command:
+          - /bg/SignInFn/SignIn.handler
+      Description: Returns authentication information from cognito
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Auth: 
+              Authorizer: NONE
+            Path: /auth/signin
+            Method: post
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
+
+  SignUpFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BG-SignUp
+      PackageType: Image
+      ImageConfig:
+        Command:
+          - /bg/SignUpFn/SignUp.handler
+      Description: Creates a new user in cognito
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Auth: 
+              Authorizer: NONE
+            Path: /auth/signup
+            Method: post
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./
+      DockerTag: Latest
 
   
