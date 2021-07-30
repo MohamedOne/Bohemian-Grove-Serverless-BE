@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { HTTPResponse } from "../Global/DTO";
-import { ddbDocClient } from "../Global/DynamoDB";
-import { UpdateCommand, UpdateCommandInput } from "@aws-sdk/lib-dynamodb";
+import { ddbClient } from "../Global/DynamoDB";
+import { UpdateItemCommand, UpdateItemCommandInput } from "@aws-sdk/client-dynamodb";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
     const data = JSON.parse(event.body || '{}');
@@ -12,20 +12,20 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
     if (data.isLiked) operation = "DELETE";
     else operation = "ADD";
 
-    const params: UpdateCommandInput = {
+    const params: UpdateItemCommandInput = {
         TableName: process.env.DDB_TABLE_NAME,
         Key: {
-            dataType: "post",
-            dataKey: data.timeStamp
+            dataType: {S: "post"},
+            dataKey: {S: data.timeStamp}
         },
         ExpressionAttributeValues: {
-            ":u": data.userName
+            ":u": {SS: [data.userName]}
         },
         UpdateExpression: `${operation} likes :u`
     }
 
     try {
-        ddbDocClient.send(new UpdateCommand(params));
+        ddbClient.send(new UpdateItemCommand(params));
     } catch (err) {
         console.log(err);
         return new HTTPResponse(500, {message: "Failed to update database"});
