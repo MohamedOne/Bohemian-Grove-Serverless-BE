@@ -1,7 +1,7 @@
 import { HTTPResponse } from "../Global/DTO";
-import { ddbDocClient } from "../Global/DynamoDB";
+import { ddbClient } from "../Global/DynamoDB";
 import { APIGatewayProxyEvent } from "aws-lambda"
-import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import { PutItemCommand, PutItemCommandInput } from "@aws-sdk/client-dynamodb";
 import Post from "../Global/Post";
 
 
@@ -17,26 +17,25 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         let timeStamp = temp.toString();
 
         //Check username in incoming post body against username in { event.requestContext.authorizer.claims.username }
-
-        const likes: string[] = ["default"]; 
         
         //Proceed with adding new post 
-        const params: PutCommandInput = {
+        const params: PutItemCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
 
             Item: {
-                dataKey: timeStamp,
-                dataType: "post",
-                displayName: `${newPost.displayName}`,
-                userName: `${newPost.userName}`,
-                displayImg: `${newPost.displayImg}`,
-                postBody: `${newPost.postBody}`,
-                comments: []
+                dataKey: {S: timeStamp},
+                dataType: {S: "post"},
+                displayName: {S: `${newPost.displayName}`},
+                userName: {S: `${newPost.userName}`},
+                displayImg: {S: `${newPost.displayImg}`},
+                postBody: {S: `${newPost.postBody}`},
+                likes: {SS: []},
+                comments: {L: []}
             }
         }
 
         try {
-            const data = await ddbDocClient.send(new PutCommand(params));
+            const data = await ddbClient.send(new PutItemCommand(params));
         } catch (err) {
             console.log(err);
             return new HTTPResponse(500, "Failed to add post to database");
