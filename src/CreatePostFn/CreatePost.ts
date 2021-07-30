@@ -8,7 +8,7 @@ import Post from "../Global/Post";
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
     //Check if we have event body and specifically if we have a username in event
-    if (event.body && event.requestContext.authorizer) {
+    if(event.body ) {
         let body = event.body;
         const post: any = JSON.parse(body);
         const newPost: Post = new Post(post);
