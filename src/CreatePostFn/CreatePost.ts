@@ -18,6 +18,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
         //Check username in incoming post body against username in { event.requestContext.authorizer.claims.username }
 
+        const likes: string[] = ["default"]; 
+        
         //Proceed with adding new post 
         const params: PutCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
@@ -29,7 +31,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 userName: `${newPost.userName}`,
                 displayImg: `${newPost.displayImg}`,
                 postBody: `${newPost.postBody}`,
-                likes: [' '],
+                likes: likes,
                 comments: []
             }
         }
