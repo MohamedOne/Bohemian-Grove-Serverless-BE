@@ -6,6 +6,8 @@ import { UpdateItemCommand, UpdateItemCommandInput } from "@aws-sdk/client-dynam
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
     const data = JSON.parse(event.body || '{}');
 
+    console.log(data);
+
     if (data.isLiked == undefined || !data.userName || !data.timeStamp) return new HTTPResponse(400, {message: "Invalid input"});
 
     let operation;
