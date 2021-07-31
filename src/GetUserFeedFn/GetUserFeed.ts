@@ -22,7 +22,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 ":p": { S: "post" },
                 ":s": { S: event.pathParameters.userName || ' ' }
             },
-            FilterExpression: "userName = :s"
+            FilterExpression: "userName = :s",
+            ScanIndexForward: false
         }
 
         let data;
@@ -75,7 +76,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             TableName: process.env.DDB_TABLE_NAME,
             ExpressionAttributeValues: attributes,
             KeyConditionExpression: "dataType = :p",
-            FilterExpression: "userName IN " + followList
+            FilterExpression: "userName IN " + followList,
+            ScanIndexForward: false
         }
 
         let result;
