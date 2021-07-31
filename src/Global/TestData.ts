@@ -8,8 +8,8 @@ export const testPost1 = {
     postBody: "I am the captain now",
     postImg: "captainHat.png",
     comments: [{
-        displayName : "mo",
-        profileImg : "sponge.png",
+        displayName: "mo",
+        profileImg: "sponge.png",
         comment: "i love commenting",
         commentStamp: "121534"
     },
@@ -32,8 +32,8 @@ export const testPost2 = {
     postBody: "I am the captain now",
     postImg: "captainHat.png",
     comments: [{
-        displayName : "mo",
-        profileImg : "sponge.png",
+        displayName: "mo",
+        profileImg: "sponge.png",
         comment: "i love commenting",
         commentStamp: "121534"
     },
@@ -110,5 +110,17 @@ export const testUser3 = {
     displayName: "mama",
     email: "asdas@yahoo.com",
     profileImg: "img"
+
+}
+
+export const testUser5 = {
+
+    dataKey: "theSponge",
+    dataType: "user",
+    displayName: "captain_2",
+    email: "asdas@yahoo.com",
+    password: "ASDASD",
+    profileImg: "images",
+    following: ["sam", "mo", "kai", "jared"]
 
 }

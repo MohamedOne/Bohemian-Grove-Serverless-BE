@@ -11,13 +11,14 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             TableName: process.env.DDB_TABLE_NAME,
             KeyConditionExpression: "dataType = :u",
             ExpressionAttributeValues: {
-                ":s": event.pathParameters.displayName,
+                ":s": event.pathParameters,
                 ":u": "user"
             },
             FilterExpression: "contains(displayName, :s)"
         }
 
         const result = await ddbDocClient.send(new QueryCommand(params));
+
         return new HTTPResponse(200, result.Items);
     }
     return new HTTPResponse(400, "path params was null")
