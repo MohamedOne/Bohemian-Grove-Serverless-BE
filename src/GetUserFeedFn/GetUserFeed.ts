@@ -1,32 +1,38 @@
 import { HTTPResponse } from "../Global/DTO";
-import { ddbDocClient } from "../Global/DynamoDB";
+import { ddbClient } from "../Global/DynamoDB";
 import Post from '../Global/Post'
-import { QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, QueryCommandInput } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
-    // Your code here
+    
+    // Parse data
+    if (!event.pathParameters) return new HTTPResponse(400, {message: "Invalid input"});
 
-    if (event.pathParameters != null) {
+    // Query dynamo
+    const params: QueryCommandInput = {
+        TableName: process.env.DDB_TABLE_NAME,
+        KeyConditionExpression: 'dataType = :p',
+        ExpressionAttributeValues: {
+            ":p": {S: "post"},
+            ":s": {S: event.pathParameters.userName || ' '}
+        },
+        FilterExpression: "userName = :s"
 
 
-        const params: QueryCommandInput = {
-            TableName: process.env.DDB_TABLE_NAME,
-
-            KeyConditionExpression: 'dataType = :p',
-            ExpressionAttributeValues: {
-                ":p": "post",
-                ":s": event.pathParameters.userName
-            },
-            FilterExpression: "contains(userName, :s)"
-
-
-        }
-        const data = await ddbDocClient.send(new QueryCommand(params));
-        const feed = data.Items;
-        return new HTTPResponse(200, feed);
     }
-    return new HTTPResponse(400, "path params was null");
+    
+    let data;
+    try {
+        data = await ddbClient.send(new QueryCommand(params));
+    } catch (err) {
+        console.log(err);
+        return new HTTPResponse(500, "Database query failed");
+    }
+
+    // Return success
+    const feed = data.Items;
+    return new HTTPResponse(200, feed);
 }
