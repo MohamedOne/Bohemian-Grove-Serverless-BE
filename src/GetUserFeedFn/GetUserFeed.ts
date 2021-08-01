@@ -57,6 +57,9 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             return new HTTPResponse(500, "Failed to get follower list");
         }
 
+        // If user isn't following anyone, return an empty array
+        if (!userData.Item?.following) return new HTTPResponse(200, []);
+        
         // Generate list of followed users
         let following = userData.Item?.following.SS || [];
 
