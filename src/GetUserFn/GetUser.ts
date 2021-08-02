@@ -18,14 +18,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             }
         }
 
-        try {
+       
             const data = await ddbClient.send(new GetItemCommand(params));
             //Return requested user
             return new HTTPResponse(200, data.Item);
-        } catch (err) {
-            console.log(err);
-            return new HTTPResponse(400, "Unable to get user");
-        }
+        
     }
 
     //Default response if we can't grab user

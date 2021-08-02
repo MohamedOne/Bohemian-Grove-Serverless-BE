@@ -31,14 +31,13 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             ReturnValues: "ALL_NEW"
         }
 
-        try {
+        
             //Update requested post
             const data = await ddbDocClient.send(new UpdateCommand(params));
             return new HTTPResponse(200, data.Attributes);
-        } catch (err) {
-            return new HTTPResponse(400, "Unable to update post");  
+          
     }
-    }   
+    
 
     //Default response if we can't update post
     return new HTTPResponse(400, "Unable to update post");

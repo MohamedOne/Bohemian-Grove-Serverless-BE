@@ -34,12 +34,9 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             }
         }
 
-        try {
+
             const data = await ddbClient.send(new PutItemCommand(params));
-        } catch (err) {
-            console.log(err);
-            return new HTTPResponse(500, "Failed to add post to database");
-        }
+
         
         return new HTTPResponse(200, "Post added successfully");
 
