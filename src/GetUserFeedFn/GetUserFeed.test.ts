@@ -1,57 +1,96 @@
+jest.mock("../Global/DynamoDB");
 
-import { ddbDocClient } from '../Global/DynamoDB'
-import { PutCommand, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
-import { testPost1, testPost2, testPost3, testPost4, testUser1 } from '../Global/TestData'
-import { handler } from './GetUserFeed'
-import { HTTPResponse } from '../Global/DTO';
-import lambdaEventMock from "lambda-event-mock"
+import createEvent from "@serverless/event-mocks";
+import { APIGatewayProxyEvent } from "aws-lambda";
+import { ddbClient } from "../Global/DynamoDB";
+import { handler } from "./GetUserFeed";
 
-afterAll(() => {
-    ddbDocClient.destroy();
+describe("GetUserFeed function handler", () => {
+
+    it("should fail with code 400 if invalid input provided", async () => {
+        const input = createEvent("aws:apiGateway", {} as APIGatewayProxyEvent);
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(400);
+    });
+
+    it("should fail with code 500 if single user query fails", async () => {
+        const inputBody: unknown = {
+            pathParameters: {userName: "bob"}
+        }
+        const input = createEvent("aws:apiGateway", inputBody as APIGatewayProxyEvent)
+        ddbClient.send.mockImplementationOnce(() => {throw "error"});
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(500);
+    });
+
+    it("should succeed with code 200 if single user quesry succeeds", async () => {
+        const inputBody: unknown = {
+            pathParameters: {userName: "bob"}
+        }
+        const input = createEvent("aws:apiGateway", inputBody as APIGatewayProxyEvent)
+        ddbClient.send.mockImplementationOnce(() => {return {}});
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(200);
+    });
+
+    it("should fail with code 500 if get follower list fails", async () => {
+        const inputBody: unknown = {
+            pathParameters: {userName: "bob"},
+            queryStringParameters: {following: true}
+        }
+        const input = createEvent("aws:apiGateway", inputBody as APIGatewayProxyEvent)
+        ddbClient.send.mockImplementationOnce(() => {throw "error"});
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(500);
+    });
+
+    it("should succeed with code 200 if user is not following anyone", async () => {
+        const inputBody: unknown = {
+            pathParameters: {userName: "bob"},
+            queryStringParameters: {following: true}
+        }
+        const input = createEvent("aws:apiGateway", inputBody as APIGatewayProxyEvent)
+        ddbClient.send.mockImplementationOnce(() => {return {}});
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(200);
+    });
+
+    it("should fail with code 500 if multi user query fails", async () => {
+        const inputBody: unknown = {
+            pathParameters: {userName: "bob"},
+            queryStringParameters: {following: true}
+        }
+        const input = createEvent("aws:apiGateway", inputBody as APIGatewayProxyEvent)
+        ddbClient.send.mockImplementationOnce(() => {return {Item: {following: {SS: ["bob", "joe"]}}};});
+        ddbClient.send.mockImplementationOnce(() => {throw "error"});
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(500);
+    });
+
+    it ("should succeed with code 200 if multi user query succeeds", async () => {
+        const inputBody: unknown = {
+            pathParameters: {userName: "bob"},
+            queryStringParameters: {following: true}
+        }
+        const input = createEvent("aws:apiGateway", inputBody as APIGatewayProxyEvent)
+        ddbClient.send.mockImplementationOnce(() => {return {Item: {following: {SS: ["bob", "joe"]}}};});
+        ddbClient.send.mockImplementationOnce(() => {return {}});
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(200);
+    });
+
 });
-
-test('it should get all posts from user provided', async () => {
-    const putParams1 = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Item: testPost1
-    }
-    const putParams2 = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Item: testPost2
-    }
-    const putParams3 = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Item: testPost3
-    }
-
-    await ddbDocClient.send(new PutCommand(putParams1));
-    await ddbDocClient.send(new PutCommand(putParams2));
-    await ddbDocClient.send(new PutCommand(putParams3));
-
-    const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/post/`)
-        .method('GET')
-        .header('test get user feed')
-
-
-    mockEvent._event.pathParameters = { userName: testPost3.userName };
-
-    const result = await handler(mockEvent._event);
-    const checker = new HTTPResponse(200, [testPost3])
-
-    expect(result).toEqual(checker);
-})
-
-test('it should error because path params was null', async () => {
-
-
-    const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/post/`)
-        .method('GET')
-        .header('test get user feed')
-
-    const result = await handler(mockEvent._event);
-    const checker = new HTTPResponse(400, "path params was null");
-
-    expect(result).toEqual(checker);
-})

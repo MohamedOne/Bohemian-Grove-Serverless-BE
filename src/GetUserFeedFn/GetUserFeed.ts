@@ -9,7 +9,7 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
     // Parse data
-    if (!event.pathParameters) return new HTTPResponse(400, { message: "Invalid input" });
+    if (!event.pathParameters || !event.pathParameters.userName) return new HTTPResponse(400, { message: "Invalid input" });
 
     // Determine operation to perform
     if (!event.queryStringParameters || !event.queryStringParameters.following) {
@@ -35,8 +35,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         }
 
         // Return success
-        const feed = data.Items;
-        return new HTTPResponse(200, feed);
+        return new HTTPResponse(200, data.Items);
 
     } else {
         
