@@ -32,10 +32,12 @@ test('it should return the users from the search params', async () => {
         .method('GET')
         .header('test user search')
 
-    mockEvent._event.pathParameters = { displayName: testUser1.displayName }
+    mockEvent._event.pathParameters = testUser1.displayName
     const result = await handler(mockEvent._event);
 
     const checker = new HTTPResponse(200, [testUser1])
+
+
     expect(result.body).toEqual(checker.body);
 })
 

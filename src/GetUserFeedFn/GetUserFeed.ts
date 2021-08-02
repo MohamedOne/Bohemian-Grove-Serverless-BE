@@ -1,78 +1,98 @@
 import { HTTPResponse } from "../Global/DTO";
-import { ddbDocClient } from "../Global/DynamoDB";
+import { ddbClient } from "../Global/DynamoDB";
 import Post from '../Global/Post'
-import { GetCommand, GetCommandInput, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
+import { GetItemCommand, GetItemCommandInput, QueryCommand, QueryCommandInput } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
-    // Your code here
 
-    if (event.pathParameters != null) {
-        
-        const getFollowerParams: GetCommandInput = {
-            TableName: process.env.DDB_TABLE_NAME,
-            Key: {
-                dataType : "user",
-                dataKey : event.pathParameters.userName
-            },
-            ProjectionExpression: "follower"
-        }
+    // Parse data
+    if (!event.pathParameters) return new HTTPResponse(400, { message: "Invalid input" });
 
-        //Initial step--> Grab following array off of user
-        const resultQuery = await ddbDocClient.send(new GetCommand(getFollowerParams));
+    // Determine operation to perform
+    if (!event.queryStringParameters || !event.queryStringParameters.following) {
 
-        //Iterate over following list to find if follower exists already
-        let temp = resultQuery.Item
-        console.log(temp);
-        console.log(temp?.follower)
-        let followerArray = temp?.follower;
-
-        //Iterate over usernames in follower array and get all posts
-        let userFeed = [];
-        for(let i = 0; i < followerArray.length; i++) {
-            const paramsFollower: QueryCommandInput = {
-                TableName: process.env.DDB_TABLE_NAME,
-    
-                KeyConditionExpression: 'dataType = :p',
-                ExpressionAttributeValues: {
-                    ":p": "post",
-                    ":s": followerArray[i],
-                    
-                },
-                FilterExpression: "userName = :s"
-    
-    
-            }
-            const dataFollower = await ddbDocClient.send(new QueryCommand(paramsFollower));
-            console.log(dataFollower.Items);
-            let tempFeed: any = dataFollower.Items;
-            for(let elem of tempFeed) {
-                userFeed.push(elem);
-            }
-            
-            
-
-        }
-        console.log(userFeed);
-
-
+        // Query dynamo
         const params: QueryCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
-
             KeyConditionExpression: 'dataType = :p',
             ExpressionAttributeValues: {
-                ":p": "post",
-                ":s": event.pathParameters.userName
+                ":p": { S: "post" },
+                ":s": { S: event.pathParameters.userName || ' ' }
             },
-            FilterExpression: "contains(userName, :s)"
-
-
+            FilterExpression: "userName = :s",
+            ScanIndexForward: false
         }
-        const data = await ddbDocClient.send(new QueryCommand(params));
+
+        let data;
+        try {
+            data = await ddbClient.send(new QueryCommand(params));
+        } catch (err) {
+            console.log(err);
+            return new HTTPResponse(500, "Failed to get user feed");
+        }
+
+        // Return success
         const feed = data.Items;
-        return new HTTPResponse(200, userFeed);
+        return new HTTPResponse(200, feed);
+
+    } else {
+        
+        // Get user data from dynamo 
+        const getParams: GetItemCommandInput = {
+            TableName: process.env.DDB_TABLE_NAME,
+            Key: {
+                dataType: {S: "user"},
+                dataKey: {S: event.pathParameters.userName || ' ' }
+            }
+        }
+
+        let userData;
+        try {
+            userData = await ddbClient.send(new GetItemCommand(getParams));
+        } catch (err) {
+            console.log(err);
+            return new HTTPResponse(500, "Failed to get follower list");
+        }
+
+        // If user isn't following anyone, return an empty array
+        if (!userData.Item?.following) return new HTTPResponse(200, []);
+        
+        // Generate list of followed users
+        let following = userData.Item?.following.SS || [];
+
+        const attributes: any = {};
+        attributes[":p"] = {S: "post"}
+
+        let followList = "(";
+        for (let i = 0; i < following.length; i++) {
+            attributes[":user" + i] = {S: following[i]};
+            followList += ":user" + i;
+            if (following[i+1] != undefined) followList += ", ";
+        }
+        followList += ")";
+        
+        // Get list of posts from followers
+        const params: QueryCommandInput = {
+            TableName: process.env.DDB_TABLE_NAME,
+            ExpressionAttributeValues: attributes,
+            KeyConditionExpression: "dataType = :p",
+            FilterExpression: "userName IN " + followList,
+            ScanIndexForward: false
+        }
+
+        let result;
+        try {
+            result = await ddbClient.send(new QueryCommand(params));
+        } catch (err) {
+            console.log(err);
+            return new HTTPResponse(500, {message: "Failed to get post array"});
+        }
+
+        // Return success
+        return new HTTPResponse(200, result.Items);
     }
-    return new HTTPResponse(400, "path params was null");
+
 }

@@ -20,13 +20,13 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             ReturnValues: "ALL_OLD"
         }
 
-        try {
-            //Delete requested user
+        
+            //Delete requested post
             const result = await ddbDocClient.send(new DeleteCommand(params));
             return new HTTPResponse(200, result.Attributes);
-        } catch (err) {
-            console.log(err);
-    }
+        
+        
+    
     }   
 
     //Default response if we can't grab user

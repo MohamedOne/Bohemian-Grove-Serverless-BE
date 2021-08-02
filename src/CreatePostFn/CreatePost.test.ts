@@ -90,7 +90,6 @@ test('it should not create a new post', async() => {
     .path(`/post/${tempPost.dataKey}`)
     .method('POST')
     .header('test if we are creating post')
-    .body(tempPost)
 
     mockEvent._event.requestContext.authorizer = {
         claims : {

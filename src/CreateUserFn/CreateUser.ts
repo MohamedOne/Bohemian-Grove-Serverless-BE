@@ -1,6 +1,6 @@
-import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import { PutItemCommand, PutItemCommandInput } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent } from "aws-lambda";
-import { ddbDocClient } from "../Global/DynamoDB";
+import { ddbClient } from "../Global/DynamoDB";
 import { HTTPResponse } from "../Global/DTO";
 import User from "../Global/User";
 
@@ -12,15 +12,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         const newUser: User = new User(user);
 
         const test = {
-            dataKey: newUser.dataKey,
-            dataType: newUser.dataType,
-            displayName: newUser.displayName,
-            email: newUser.email,
-            profileImg: newUser.profileImg,
-            followers: 0,
-            following: []
+            dataKey: {S: newUser.dataKey},
+            dataType: {S: newUser.dataType},
+            displayName: {S: newUser.displayName},
+            email: {S: newUser.email},
+            profileImg: {S: newUser.profileImg},
+            followers: {SS: ["default"]},
+            following: {SS: ["default"]}
         }
-        const params: PutCommandInput = {
+        const params: PutItemCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             Item: test,
             ExpressionAttributeNames: {
@@ -31,7 +31,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
 
         try {
 
-            await ddbDocClient.send(new PutCommand(params));
+            await ddbClient.send(new PutItemCommand(params));
             return new HTTPResponse(201);
         }
         catch (err) {

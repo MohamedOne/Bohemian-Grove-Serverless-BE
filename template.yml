@@ -219,14 +219,14 @@ Resources:
       DockerContext: ./
       DockerTag: Latest
 
-  SearchUsersFn:
+  SearchUserFn:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: BG-SearchUsers
+      FunctionName: BG-SearchUser
       PackageType: Image
       ImageConfig:
         Command:
-          - /bg/SearchUsersFn/SearchUsers.handler
+          - /bg/SearchUserFn/SearchUser.handler
       Description: Searches for all users matching a search term in the DynamoDB table.
       Events:
         ApiEvent:
@@ -257,29 +257,6 @@ Resources:
           Properties:
             Path: /user/{userName}/follow
             Method: post
-            RequestParameters:
-              - method.request.path.userName
-      Policies: AmazonDynamoDBFullAccess
-    Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: ./
-      DockerTag: Latest
-
-  GetUserPostFn:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: BG-GetUserPost
-      PackageType: Image
-      ImageConfig:
-        Command:
-          - /bg/GetUserPostFn/GetUserPost.handler
-      Description: Grabs array of user specific posts. 
-      Events:
-        ApiEvent:
-          Type: Api
-          Properties:
-            Path: /post/user/2/{userName}
-            Method: get
             RequestParameters:
               - method.request.path.userName
       Policies: AmazonDynamoDBFullAccess
@@ -504,30 +481,6 @@ Resources:
   #       Command:
   #         - /bg/TestS3Fn/TestS3.handler
   #     Description: A lambda to be used as a test for S3 buckets.
-  
-  # Singular image lambda
-  AddUserImgFn:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: BG-AddUserImg
-      PackageType: Image
-      ImageConfig:
-        Command:
-          - /bg/AddUserImgFn/AddUserImg.handler
-      Description: Update user image
-      Events:
-        ApiEvent:
-          Type: Api
-          Properties:
-            Path: /user/{userName}/image
-            Method: put
-            RequestParameters:
-              - method.request.path.userName
-      Policies: AmazonDynamoDBFullAccess
-    Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: ./
-      DockerTag: Latest
 
   # Authentication lambdas
   SignInFn:

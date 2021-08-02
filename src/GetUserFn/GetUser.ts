@@ -1,7 +1,7 @@
 import { HTTPResponse } from "../Global/DTO";
-import { ddbDocClient } from "../Global/DynamoDB";
+import { ddbClient } from "../Global/DynamoDB";
 import { APIGatewayProxyEvent } from "aws-lambda"
-import {GetCommand, GetCommandInput} from "@aws-sdk/lib-dynamodb";
+import { GetItemCommand, GetItemCommandInput } from "@aws-sdk/client-dynamodb";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
 
@@ -10,24 +10,21 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         console.log("Received userName: " + event.pathParameters.userName);
         let userName = event.pathParameters.userName;
 
-        const params: GetCommandInput = {
+        const params: GetItemCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             Key: {
-                dataType: "user",
-                dataKey: userName
+                dataType: { S: "user" },
+                dataKey: { S: userName || '' }
             }
         }
 
-        try {
-            const data = await ddbDocClient.send(new GetCommand(params));
+       
+            const data = await ddbClient.send(new GetItemCommand(params));
             //Return requested user
             return new HTTPResponse(200, data.Item);
-        } catch (err) {
-            console.log(err);
-            return new HTTPResponse(400, "Unable to get user");  
-      }
-    }   
+        
+    }
 
     //Default response if we can't grab user
     return new HTTPResponse(400, "Unable to get user");
-    }
+}

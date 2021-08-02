@@ -1,100 +1,72 @@
-import { ddbDocClient } from '../Global/DynamoDB'
+jest.mock("../Global/DynamoDB");
+
+import { ddbClient } from '../Global/DynamoDB'
 import { PutCommand, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
 import { testUser1 } from '../Global/TestData'
 import { handler } from './FollowUnfollow'
 import { HTTPResponse } from '../Global/DTO';
 import lambdaEventMock from 'lambda-event-mock';
+import createEvent from '@serverless/event-mocks';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
-afterAll(() => {
-    ddbDocClient.destroy();
+describe("FollowUnfollow function handler", () => {
+
+  it("should fail with code 400 if invalid body is provided", async () => {
+    const input = createEvent("aws:apiGateway", {} as APIGatewayProxyEvent);
+
+    const result = await handler(input);
+
+    expect(result.statusCode).toBe(400);
   });
-  
-  test('it should add a follower', async () => {
 
-    //Add a user to our table
-    const putParams1 = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Item: testUser1
-      }
+  it("should fail with code 500 if first DynamoDB call fails", async () => {
+    const inputBody = JSON.stringify({
+      isFollowing: true,
+      userToFollow: "bob"
+    });
+    const inputParams = {
+      userName: "jeffrey"
+    };
+    const input = createEvent("aws:apiGateway", {body: inputBody, pathParameters: inputParams});
+    ddbClient.send.mockImplementationOnce(() => {throw "there was an error"});
 
-      await ddbDocClient.send(new PutCommand(putParams1));
+    const result = await handler(input);
 
+    expect(result.statusCode).toBe(500);
+  });
 
-      const sendBody = {
-          follower: "megan"
-      }
-      const mockEvent = lambdaEventMock.apiGateway()
-      .path(`/user`)
-      .method('PUT')
-      .header('alter follower list')
-      .body(sendBody)
-    
-    mockEvent._event.pathParameters = {
-        username : "theSponge"
-    }
+  it("should fail with code 500 if second DynamoDB call fails", async () => {
+    const inputBody = JSON.stringify({
+      isFollowing: true,
+      userToFollow: "bob"
+    });
+    const inputParams = {
+      userName: "jeffrey"
+    };
+    const input = createEvent("aws:apiGateway", {body: inputBody, pathParameters: inputParams});
+    ddbClient.send.mockImplementationOnce(() => {return {};});
+    ddbClient.send.mockImplementationOnce(() => {throw "there was an error"});
 
-    const result = await handler(mockEvent._event);
-  
-  
-    expect(result.statusCode).toEqual(200);
+    const result = await handler(input);
 
-  })
+    expect(result.statusCode).toBe(500);
+  });
 
-  test('it should remove a follower', async() => {
+  it("should succeed with code 200 if both dynamo calls succeed", async () => {
+    const inputBody = JSON.stringify({
+      isFollowing: false,
+      userToFollow: "bob"
+    });
+    const inputParams = {
+      userName: "jeffrey"
+    };
+    const input = createEvent("aws:apiGateway", {body: inputBody, pathParameters: inputParams});
+    ddbClient.send.mockImplementationOnce(() => {return {};});
+    ddbClient.send.mockImplementationOnce(() => {return {};});
 
-    //Add a user to our table
-    const putParams1 = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Item: testUser1
-      }
+    const result = await handler(input);
 
-      await ddbDocClient.send(new PutCommand(putParams1));
+    expect(result.statusCode).toBe(200);
+  });
 
-
-      const sendBody = {
-          follower: "mo"
-      }
-      const mockEvent = lambdaEventMock.apiGateway()
-      .path(`/user`)
-      .method('PUT')
-      .header('alter follower list')
-      .body(sendBody)
-    
-    mockEvent._event.pathParameters = {
-        username : "theSponge"
-    }
-
-    const result = await handler(mockEvent._event);
-  
-  
-    expect(result.statusCode).toEqual(200);
-
-  })
-
-  test('it should be unable to add or remove a follower', async() => {
-
-    //Add a user to our table
-    const putParams1 = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Item: testUser1
-      }
-
-      await ddbDocClient.send(new PutCommand(putParams1));
-
-
-
-      const mockEvent = lambdaEventMock.apiGateway()
-      .path(`/user`)
-      .method('PUT')
-      .header('alter follower list')
-
-    
-    mockEvent._event.pathParameters = {
-        username : "theSponge"
-    }
-
-    const result = await handler(mockEvent._event);
-  
-  
-    expect(result.statusCode).toEqual(400);
-  })
+});

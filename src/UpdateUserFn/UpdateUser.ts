@@ -21,10 +21,9 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
             },
             ExpressionAttributeValues: {
                 ":d": updatedUser.displayName,
-                ":e": updatedUser.email,
                 ":i": updatedUser.profileImg
             },
-            UpdateExpression: "SET displayName = :d, email = :e, profileImg = :i",
+            UpdateExpression: "SET displayName = :d,  profileImg = :i",
             ReturnValues: "ALL_NEW"
         }
 

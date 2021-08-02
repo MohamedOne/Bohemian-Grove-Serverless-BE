@@ -1,7 +1,7 @@
 import { HTTPResponse } from "../Global/DTO";
-import { ddbDocClient } from "../Global/DynamoDB";
+import { ddbClient } from "../Global/DynamoDB";
 import Post from '../Global/Post'
-import { GetCommand, GetCommandInput, QueryCommand, QueryCommandInput, ScanCommand, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, QueryCommandInput } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse> => {
@@ -11,13 +11,13 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
         const params: QueryCommandInput = {
             TableName: process.env.DDB_TABLE_NAME,
             ExpressionAttributeValues: {
-                ":type": "post"
+                ":type": {S:"post"}
             },
             KeyConditionExpression: "dataType = :type",
             ScanIndexForward: false
 
         }
-        const data = await ddbDocClient.send(new QueryCommand(params));
+        const data = await ddbClient.send(new QueryCommand(params));
         const feed = data.Items;
         return new HTTPResponse(200, feed);
 
