@@ -55,7 +55,18 @@ export const testPost3 = {
     displayImg: "captain.png",
     postBody: "I am the captain now",
     postImg: "captainHat.png",
-    comments: ["this post sucks", "        "],
+    comments: [{
+        displayName : "mo",
+        profileImg : "sponge.png",
+        comment: "i love commenting",
+        commentStamp: "121534"
+    },
+    {
+        displayName: "christy",
+        profileImg: "patrick.png",
+        comment: "and by love i mean hate",
+        commentStamp: "546789"
+    }],
     likes: ["asd"]
 
 }
@@ -64,7 +75,7 @@ export const testPost4 = {
 
     dataType: undefined,
     userName: "mod",
-    dataKey: "456",
+    dataKey: "9088",
     displayName: "hahhaa",
     displayImg: "captain.png",
     postBody: "I am the captain now",
@@ -72,6 +83,18 @@ export const testPost4 = {
     comments: ["this post sucks", "        "],
     likes: undefined
 
+}
+
+export const testPost5 = {
+    dataType: "post",
+    userName: "theSponge",
+    dataKey: "89099",
+    displayName: "hahhaa",
+    displayImg: "captain.png",
+    postBody: "I am the captain now",
+    postImg: "captainHat.png",
+    comments: ["this post sucks", "        "],
+    likes: ["asd"]
 }
 
 
@@ -83,6 +106,7 @@ export const testUser1 = {
     email: "asdas@gmail.com",
     password: "ASDASD",
     profileImg: "img",
+    follower: ["admin", "mod"],
     following: ["sam", "mo", "kai", "jared"]
 
 }

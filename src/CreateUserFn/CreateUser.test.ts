@@ -1,89 +1,74 @@
-import { ddbDocClient } from '../Global/DynamoDB';
-import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
-import { testUser1, testUser3 } from '../Global/TestData';
-import { handler } from './CreateUser';
-import { HTTPResponse } from '../Global/DTO';
-import lambdaEventMock from 'lambda-event-mock';
-import User from '../Global/User';
+jest.mock("../Global/DynamoDB");
+
+import { ddbClient } from '../Global/DynamoDB'
+import { handler } from './CreateUser'
+import createEvent from '@serverless/event-mocks';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 
-afterAll(() => {
-    ddbDocClient.destroy();
+describe("CreateUser function handler", () => {
+
+    it("should fail with code 400 if invalid body is provided", async () => {
+
+        const input = createEvent("aws:apiGateway", { body: null } as APIGatewayProxyEvent);
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(400);
+    });
+
+    it("should fail with code 500 if first DynamoDB call fails", async () => {
+        const inputBody = JSON.stringify({
+
+        });
+        const inputParams = {
+            userName: "jeffrey"
+        };
+        const input = createEvent("aws:apiGateway", { body: inputBody, pathParameters: inputParams });
+        ddbClient.send.mockImplementationOnce(() => { throw "there was an error" });
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(500);
+    });
+
+
+    it("should fail with error code 403 user already exists", async () => {
+        const inputBody = JSON.stringify({
+
+        });
+        const inputParams = {
+            userName: "jeffrey"
+        };
+        const input = createEvent("aws:apiGateway", { body: inputBody, pathParameters: inputParams });
+
+
+        ddbClient.send.mockImplementationOnce(() => { throw { name: "ConditionalCheckFailedException" } });
+
+
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(403);
+    });
+
+    it("should succeed with code 201 if both dynamo calls succeed", async () => {
+        const inputBody = JSON.stringify({
+            dataKey: "jeffrey"
+        });
+        const inputParams = {
+            userName: "jeffrey"
+        };
+        const input = createEvent("aws:apiGateway", { body: inputBody, pathParameters: inputParams });
+
+
+        ddbClient.send.mockImplementationOnce(() => { });
+
+
+
+        const result = await handler(input);
+
+        expect(result.statusCode).toBe(201);
+    });
+
 });
-
-test('it should create a user', async () => {
-
-    const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/user/${testUser1.dataKey}`)
-        .method('POST')
-        .header('test create user')
-        .body(testUser1);
-
-    const result = await handler(mockEvent._event);
-
-    expect(result.statusCode).toEqual(201);
-
-    const params = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Key: {
-            dataType: "user",
-            dataKey: testUser1.dataKey
-        }
-    }
-    const check = await ddbDocClient.send(new GetCommand(params));
-    const checker: User = new User(check.Item);
-    const userResult: User = new User(testUser1);
-
-    expect(checker).toEqual(userResult);
-})
-
-test('it should not make a user because it already exists', async () => {
-
-    const putParams1 = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Item: testUser1
-    }
-
-    await ddbDocClient.send(new PutCommand(putParams1));
-
-    const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/user/${testUser1.dataKey}`)
-        .method('POST')
-        .header('test create user')
-        .body(testUser1);
-
-    const result = await handler(mockEvent._event);
-
-    expect(result.statusCode).toEqual(403);
-
-    const params = {
-        TableName: process.env.DDB_TABLE_NAME,
-        Key: {
-            dataType: "user",
-            dataKey: testUser1.dataKey
-        }
-    }
-    const check = await ddbDocClient.send(new GetCommand(params));
-    const checker: User = new User(check.Item);
-    const userResult: User = new User(testUser1);
-
-    expect(checker).toEqual(userResult);
-
-})
-
-test('if body is null it should return a 400 status code saying body was null', async () => {
-
-
-    const mockEvent = lambdaEventMock.apiGateway()
-        .path(`/user/${testUser1.dataKey}`)
-        .method('POST')
-        .header('test create user')
-        .body(null);
-
-    const result = await handler(mockEvent._event);
-
-    expect(result.statusCode).toEqual(400);
-    expect(result.body).toBe('["body was null"]')
-
-})
-

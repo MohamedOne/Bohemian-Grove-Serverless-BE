@@ -21,14 +21,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<HTTPResponse
                 }
             }
 
-            try {
+
                 //Delete requested user
                 await ddbDocClient.send(new DeleteCommand(params));
                 return new HTTPResponse(200, "User deleted successfully!");
-            } catch (err) {
-                console.log(err);
-                return new HTTPResponse(400, "Unable to delete user");  
-        }
+  
         }   
 
         //Default response if we can't grab user
