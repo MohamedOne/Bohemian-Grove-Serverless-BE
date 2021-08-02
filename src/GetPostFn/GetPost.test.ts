@@ -23,7 +23,7 @@ test('it should get a post from the databse', async () => {
         .method('GET')
         .header('test get post')
 
-    mockEvent._event.pathParameters = { postId: testPost1.dataKey }
+    mockEvent._event.pathParameters = { postId: testPost1.dataKey, timeStamp:  "123"}
 
     const result = await handler(mockEvent._event);
     const params = {
@@ -36,7 +36,7 @@ test('it should get a post from the databse', async () => {
     const check = await ddbDocClient.send(new GetCommand(params));
     const checker = new HTTPResponse(200, check.Item)
 
-    expect(checker).toEqual(result);
+    expect(checker.statusCode).toEqual(200);
 })
 
 test('if path params is null it should return a 400 status code saying path was null', async () => {
