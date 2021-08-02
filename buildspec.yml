@@ -13,15 +13,12 @@ phases:
     commands:
       - echo Compiling TypeScript...
       - npm run build
-      - echo Building and tagging docker image...
-      - docker build -t bohemian-grove-serverless .
-      - docker tag bohemian-grove-serverless:latest 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
+      - echo Building SAM template...
+      - sam build
   post_build:
     commands:
-      - echo Build complete. Pushing to ECR...
-      - docker push 319115845002.dkr.ecr.us-east-2.amazonaws.com/bohemian-grove-serverless:latest
-      - echo Push complete. Deploying SAM template.
-      - sam deploy --no-fail-on-empty-changeset
+      - echo Build complete. Deploying SAM template.
+      - sam deploy
 
 # TODO
 # Package SAM template as cloudformation template during build phase
