@@ -12,7 +12,7 @@ phases:
   build:
     commands:
       - echo Compiling TypeScript...
-      - npm run build
+      - npx tsc
       - echo Building SAM template...
       - sam build
   post_build:
