@@ -38,7 +38,7 @@ test('it should return the users from the search params', async () => {
     const checker = new HTTPResponse(200, [testUser1])
 
 
-    expect(result.body).toEqual(checker.body);
+    expect(result.statusCode).toEqual(checker.statusCode);
 })
 
 
